@@ -14,11 +14,9 @@
 
 <script>
     // nb of row and col
-    const ROW = 3; 
+    const ROW = 4; 
     // nb of places
     const SIZE = ROW * ROW;
-    // win condition: nb of connected point 
-    const WINCONDITION = 3;
     const COLORS = ["white", "red", "green"];
     
     let status = Array(SIZE).fill(0);
@@ -80,16 +78,16 @@
         let pattern = [];
         
         // horizon check
-        for (let step = 0; step + WINCONDITION - 1 < ROW; step++) {
-            pattern = [x * 3 + step, x * 3 + (step + 1), x * 3 + (step + 2)];
+        for (let step = 0; step + 2 < ROW; step++) {
+            pattern = [x * ROW + step, x * ROW + (step + 1), x * ROW + (step + 2)];
             if (check(status, pattern, player)){
                 return true;
             }
         }
 
         // vec check
-        for (let step = 0; step + WINCONDITION - 1 < ROW; step++) {
-            pattern = [step * 3 + y, (step + 1) * 3 + y, (step + 2) * 3 + y];
+        for (let step = 0; step + 2 < ROW; step++) {
+            pattern = [step * ROW + y, (step + 1) * ROW + y, (step + 2) * ROW + y];
             if (check(status, pattern, player)){
                 return true;
             }
@@ -97,16 +95,16 @@
 
         // diag check
         // j = i + (y - x)
-        for (let step = 0; step + WINCONDITION - 1 < ROW; step++) {
-            pattern = [step * 3 + (step + y - x), (step + 1) * 3 + (step + 1 + y - x), (step + 2) * 3 + (step + 2 + y - x)];
+        for (let step = 0; step + 2 < ROW; step++) {
+            pattern = [step * ROW + (step + y - x), (step + 1) * ROW + (step + 1 + y - x), (step + 2) * ROW + (step + 2 + y - x)];
             console.log(pattern);
             if (check(status, pattern, player)){
                 return true;
             }
         }
         // j = -i + (y + x)
-        for (let step = 0; step + WINCONDITION - 1 < ROW; step++) {
-            pattern = [step * 3 + (-step + y + x), (step + 1) * 3 + (-step - 1 + y + x), (step + 2) * 3 + (- step - 2 + y + x)];
+        for (let step = 0; step + 2 < ROW; step++) {
+            pattern = [step * ROW + (-step + y + x), (step + 1) * ROW + (-step - 1 + y + x), (step + 2) * ROW + (- step - 2 + y + x)];
             console.log(pattern);
             if (check(status, pattern, player)){
                 return true;
