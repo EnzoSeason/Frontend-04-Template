@@ -13,19 +13,26 @@
 <div id="board"></div>
 
 <script>
-    // nb of row and col
-    const ROW = 4; 
-    // nb of places
-    const SIZE = ROW * ROW;
     const COLORS = ["white", "red", "green"];
+    // nb of row and col
+    let row = 3; 
+    // nb of places
+    let size = row * row;
+    let winCondition = 3;
     
-    let status = Array(SIZE).fill(0);
+    
+    let status = Array(size).fill(0);
     let player = 1;
 
     function init() {
+        row = prompt('Number of the row / column of TicTacToe: ', [row]);
+        size = row * row;
+        status = Array(size).fill(0);
+        winCondition = prompt('win condition (number of connected points): ', [winCondition]);
+        
         let board = document.getElementById("board");
 
-        for (let i = 0; i < SIZE; i ++) {
+        for (let i = 0; i < size; i ++) {
             let cell = document.createElement("div");
             cell.setAttribute("id", `${i}`);
             cell.classList.add("cell");
@@ -34,15 +41,11 @@
 
             board.appendChild(cell);
 
-            if ((i + 1) % ROW === 0) {
+            if ((i + 1) % row === 0) {
                 board.appendChild(document.createElement("br"));
             }
         }
             
-    }
-
-    function switchPlayer() {
-        player = 3 - player;
     }
 
     function move(i) {
@@ -60,34 +63,22 @@
         }
     }
     
-    function check(status, pattern, player) {
-        for (let index of pattern) {
-            if (index < 0 || index > SIZE) {
-                return false;
-            }
-            if (status[index] !== player) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     function isWin(status, player, pos) {
-        let x = parseInt(pos / ROW); 
-        let y = pos % ROW;
+        let i = parseInt(pos / row); 
+        let j = pos % row;
         let pattern = [];
         
-        // horizon check
-        for (let step = 0; step + 2 < ROW; step++) {
-            pattern = [x * ROW + step, x * ROW + (step + 1), x * ROW + (step + 2)];
+        // horizontal check
+        for (let step = 0; step + 2 < row; step++) {
+            pattern = createPattern(step, i, j, 1);
             if (check(status, pattern, player)){
                 return true;
             }
         }
 
         // vec check
-        for (let step = 0; step + 2 < ROW; step++) {
-            pattern = [step * ROW + y, (step + 1) * ROW + y, (step + 2) * ROW + y];
+        for (let step = 0; step + 2 < row; step++) {
+            pattern = createPattern(step, i, j, 2);
             if (check(status, pattern, player)){
                 return true;
             }
@@ -95,17 +86,15 @@
 
         // diag check
         // j = i + (y - x)
-        for (let step = 0; step + 2 < ROW; step++) {
-            pattern = [step * ROW + (step + y - x), (step + 1) * ROW + (step + 1 + y - x), (step + 2) * ROW + (step + 2 + y - x)];
-            console.log(pattern);
+        for (let step = 0; step + 2 < row; step++) {
+            pattern = createPattern(step, i, j, 3);
             if (check(status, pattern, player)){
                 return true;
             }
         }
         // j = -i + (y + x)
-        for (let step = 0; step + 2 < ROW; step++) {
-            pattern = [step * ROW + (-step + y + x), (step + 1) * ROW + (-step - 1 + y + x), (step + 2) * ROW + (- step - 2 + y + x)];
-            console.log(pattern);
+        for (let step = 0; step + 2 < row; step++) {
+            pattern = createPattern(step, i, j, 4);
             if (check(status, pattern, player)){
                 return true;
             }
@@ -114,5 +103,62 @@
         return false;
     }
 
+    // helper functions
+
+    function switchPlayer() {
+        player = 3 - player;
+    }
+
+    function check(status, pattern, player) {
+        for (let index of pattern) {
+            if (index < 0 || index > size) {
+                return false;
+            }
+            if (status[index] !== player) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function createPattern(step, i, j, type) {
+        let pattern = [];
+
+        // horizontal
+        // x = i
+        if (type === 1) {
+            for (let slide = 0; slide < winCondition; slide ++) {
+                pattern.push(i * row + (step + slide));
+            }
+        }
+
+        // vertical
+        // y = j
+        if (type === 2) {
+            for (let slide = 0; slide < winCondition; slide ++) {
+                pattern.push((step + slide) * row + j);
+            }
+        }
+
+        // diag 1
+        // y = x + (j - i)
+        if (type === 3) {
+            for (let slide = 0; slide < winCondition; slide ++) {
+                pattern.push((step + slide) * row + (step + slide + j - i));
+            }
+        }
+
+        // diag 2
+        // y = -x + (j + i)
+        if (type === 4) {
+            for (let slide = 0; slide < winCondition; slide ++) {
+                pattern.push((step + slide) * row + (-step - slide + j + i));
+            }
+        }
+
+        return pattern;
+    }
+
+    // run code
     init();
 </script>
