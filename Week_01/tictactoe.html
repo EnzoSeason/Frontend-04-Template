@@ -26,10 +26,10 @@
     let player = 1; // player red is marked as 1, player green is 2
 
     function init() {
-        // row = prompt('Number of the row / column of TicTacToe: ', [row]);
-        // size = row * row;
-        // status = Array(size).fill(0);
-        // winCondition = prompt('win condition (number of connected points): ', [winCondition]);
+        row = prompt('Number of the row / column of TicTacToe: ', [row]);
+        size = row * row;
+        status = Array(size).fill(0);
+        winCondition = prompt('win condition (number of connected points): ', [winCondition]);
         
         let board = document.getElementById("board");
         let title = document.getElementById("title");
@@ -65,7 +65,6 @@
             if (pattern = evaluate(status, player, i)) {
                 alert(`Player ${COLORS[player]} wins ! (pattern ${pattern})`);
             } else {
-                console.log(pattern);
                 switchPlayer();
                 if (size === 9) {
                     computerMove();
@@ -110,39 +109,24 @@
      */
     function evaluate(status, player, pos) {
         let i = parseInt(pos / row); 
-        let j = pos % row;
-        let pattern = [];
+        let j = parseInt(pos % row);
         
         // horizontal check
-        for (let step = 0; step + winCondition - 1 < row; step++) {
-            pattern = createPattern(step, i, j, 1);
-            if (check(status, pattern, pos, player)){
-                return 1;
-            }
+        if (checkLine(status, drawLine(i, j, 1), pos, player)){
+            return 1;
         }
 
         // vec check
-        for (let step = 0; step + winCondition - 1 < row; step++) {
-            pattern = createPattern(step, i, j, 2);
-            if (check(status, pattern, pos, player)){
-                return 2;
-            }
+        if (checkLine(status, drawLine(i, j, 2), pos, player)){
+            return 2;
         }
 
         // diag check
-        // j = i + (y - x)
-        for (let step = 0; step + winCondition - 1 < row; step++) {
-            pattern = createPattern(step, i, j, 3);
-            if (check(status, pattern, pos, player)){
-                return 3;
-            }
+        if (checkLine(status, drawLine(i, j, 3), pos, player)){
+            return 3;
         }
-        // j = -i + (y + x)
-        for (let step = 0; step + winCondition - 1 < row; step++) {
-            pattern = createPattern(step, i, j, 4);
-            if (check(status, pattern, pos, player)){
-                return 4;
-            }
+        if (checkLine(status, drawLine(i, j, 4), pos, player)){
+            return 4;
         }
 
         return 0;
@@ -155,59 +139,69 @@
     }
 
     /**
-     * check if player wins the game using the given pattern
+     * check if player wins the game using the given line
      */
-    function check(status, pattern, pos, player) {
-        if (! pattern.includes(parseInt(pos))) {
-            return false;
-        }
-        for (let index of pattern) {
-            if (status[index] !== player) {
-                return false;
+    function checkLine(status, line, pos, player) {
+        for (let slide = 0; slide + parseInt(winCondition) - 1 < row; slide++) {
+            let isWin = true;
+            let window = line.slice(slide, slide + parseInt(winCondition));
+
+            if(! window.includes(parseInt(pos))) {
+                continue;
+            }
+            for (let p of window) {
+                if (status[p] !== player) {
+                    isWin = false;
+                    break;
+                }
+            }
+            if (isWin) {
+                return true;
             }
         }
-        return true;
+        return false;
+        
     }
 
     /**
-     * create the pattern which may win the game
+     * create the line which may win the game
      */
-    function createPattern(step, i, j, type) {
-        let pattern = [];
+    function drawLine(i, j, type) {
+        let line = [];
 
         // horizontal
         // x = i
         if (type === 1) {
-            for (let slide = 0; slide < winCondition; slide ++) {
-                pattern.push(i * row + (step + slide));
+            for (let x = 0; x < row; x++) {
+                line.push(i * row + x);
             }
         }
 
         // vertical
         // y = j
         if (type === 2) {
-            for (let slide = 0; slide < winCondition; slide ++) {
-                pattern.push((step + slide) * row + j);
+            for (let x = 0; x < row; x++) {
+                line.push(x * row + j);
             }
         }
 
         // diag 1
         // y = x + (j - i)
         if (type === 3) {
-            for (let slide = 0; slide < winCondition; slide ++) {
-                pattern.push((step + slide + j - i) * row + (step + slide));
+            for (let x = 0; x < row; x++) {
+                line.push(x * row + (j - i + x));
             }
         }
 
         // diag 2
         // y = -x + (j + i)
         if (type === 4) {
-            for (let slide = 0; slide < winCondition; slide ++) {
-                pattern.push((- step - slide + j + i) * row + (step + slide));
+            for (let x = 0; x < row; x++) {
+                line.push(x * row + (j + i - x));
             }
         }
 
-        return pattern;
+        return line;
     }
 
     function willWin(status, player) {
