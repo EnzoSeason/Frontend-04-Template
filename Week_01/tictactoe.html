@@ -47,6 +47,7 @@
             cell.setAttribute("id", `${i}`);
             cell.classList.add("cell");
             cell.style.backgroundColor = COLORS[0];
+            // cell.innerText = i;
             cell.addEventListener("click", () => move(i));
 
             board.appendChild(cell);
@@ -111,22 +112,12 @@
         let i = parseInt(pos / row); 
         let j = parseInt(pos % row);
         
-        // horizontal check
-        if (checkLine(status, drawLine(i, j, 1), pos, player)){
-            return 1;
-        }
-
-        // vec check
-        if (checkLine(status, drawLine(i, j, 2), pos, player)){
-            return 2;
-        }
-
-        // diag check
-        if (checkLine(status, drawLine(i, j, 3), pos, player)){
-            return 3;
-        }
-        if (checkLine(status, drawLine(i, j, 4), pos, player)){
-            return 4;
+        for (let type = 1; type <= 4; type++) {
+            let line = drawLine(i, j, type);
+            // console.log(line);
+            if (checkLine(status, line, pos, player)){
+                return type;
+            }
         }
 
         return 0;
@@ -142,6 +133,9 @@
      * check if player wins the game using the given line
      */
     function checkLine(status, line, pos, player) {
+        if (line.length < winCondition) {
+            return false;
+        }
         for (let slide = 0; slide + parseInt(winCondition) - 1 < row; slide++) {
             let isWin = true;
             let window = line.slice(slide, slide + parseInt(winCondition));
@@ -172,8 +166,8 @@
         // horizontal
         // x = i
         if (type === 1) {
-            for (let x = 0; x < row; x++) {
-                line.push(i * row + x);
+            for (let y = 0; y < row; y++) {
+                line.push(i * row + y);
             }
         }
 
@@ -189,7 +183,10 @@
         // y = x + (j - i)
         if (type === 3) {
             for (let x = 0; x < row; x++) {
-                line.push(x * row + (j - i + x));
+                let y = j - i + x;
+                if (y >= 0 && y < row) {
+                    line.push(x * row + y);
+                }
             }
         }
 
@@ -197,7 +194,10 @@
         // y = -x + (j + i)
         if (type === 4) {
             for (let x = 0; x < row; x++) {
-                line.push(x * row + (j + i - x));
+                let y = j + i - x;
+                if (y >= 0 && y < row) {
+                    line.push(x * row + y);
+                }
             }
         }
 
