@@ -1,0 +1,55 @@
+<style>
+    div {
+        background-color: gray;
+        display: inline-block;
+        margin: 20px;
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+    }
+    .green.light {
+        background-color: green;
+    }
+    .red.light {
+        background-color: red;
+    }
+    .yellow.light {
+        background-color: yellow;
+    }
+</style>
+
+<div class="green"></div>
+<div class="yellow"></div>
+<div class="red"></div>
+
+<script>
+    function light(className) {
+        let lights = document.getElementsByTagName("div");
+        for (let light of lights) {
+            light.classList.remove("light");
+        }
+        document.getElementsByClassName(className)[0].classList.add("light");
+    }
+
+    function sleep(time) {
+        return new Promise((resolve,reject) => {
+            setTimeout(resolve, time);
+        });
+    }
+    
+    // async func
+    // start with async keyword
+    // use await to wait for the completing
+    async function run() {
+        while(true) {
+            light("green");
+            await sleep(1000);
+            light("yellow");
+            await sleep(200);
+            light("red");
+            await sleep(500);
+        }
+    }
+
+    run();
+</script>

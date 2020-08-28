@@ -1,5 +1,13 @@
 # 总结
 
+## 异步编程
+
+学习了使用 Promise， async/await(本质还是Promise) 进行异步编程。了解了generator在js中的实现。
+
+和Dart的异步进行对比，发现在语法层面，两者基本一致。
+
+和python对比，python更为简洁。特别是generator声明之简洁（python使用`yield`, 或 `（x for x in range(10)` 即可）
+
 ## TicTacToe
 
 1. 实现三子棋的人机对战和人人对战。

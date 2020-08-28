@@ -1,0 +1,76 @@
+<style>
+    div {
+        background-color: gray;
+        display: inline-block;
+        margin: 20px;
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+    }
+    .green.light {
+        background-color: green;
+    }
+    .red.light {
+        background-color: red;
+    }
+    .yellow.light {
+        background-color: yellow;
+    }
+</style>
+
+<div class="green"></div>
+<div class="yellow"></div>
+<div class="red"></div>
+
+<script>
+    function light(className) {
+        let lights = document.getElementsByTagName("div");
+        for (let light of lights) {
+            light.classList.remove("light");
+        }
+        document.getElementsByClassName(className)[0].classList.add("light");
+    }
+
+    function sleep(time) {
+        return new Promise((resolve,reject) => {
+            setTimeout(resolve, time);
+        });
+    }
+
+    // generator
+    // start with function*
+    // yield the result, then freeze
+    // waiting for next call (for example, from next())
+    function* go() {
+        while(true) {
+            light("green");
+            yield sleep(1000);
+            light("yellow");
+            yield sleep(200);
+            light("red");
+            yield sleep(500);
+        }
+    }
+
+    // 
+    function run(iterator) {
+        let {value, done} = iterator.next();
+        if (done) {
+            return;
+        }
+        if (value instanceof Promise) {
+            value.then(() => {
+                run(iterator);
+            });
+        }
+    }
+
+    function co(generator) {
+        return function() {
+            return run(generator());
+        }
+    }
+
+    go = co(go);
+    go();
+</script>
