@@ -1,5 +1,20 @@
 # 总结
 
+## 前端开发
+
+作为刚刚进入职场的小白，我对前端没有深入的理解。买这门课的目的就是希望系统的学习一下前端。
+
+如果我来写前端开发书，书的目录如下：
+
+* 基础知识： HTML，CSS，JavaScript语法
+* Angular/React/Vue入门 （3选1）
+* 单元测试和Test Driven Development
+* UI交互
+* 与后端的交互
+* 组件化
+* 状态管理（选读）
+* 部署
+
 ## 异步编程
 
 学习了使用 Promise， async/await(本质还是Promise) 进行异步编程。了解了generator在js中的实现。
