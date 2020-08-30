@@ -21,8 +21,8 @@
 <script>
     // cell: 0 => empty, 1 => wall, 2 => path
     let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
-    
     let container = document.getElementById("container");
+
     for (let y = 0; y < 100; y ++) {
         for (let x = 0; x < 100; x++) {
             let cell = document.createElement("div");
@@ -59,13 +59,20 @@
     // disable showing context menu when right mouse is pressed down
     document.addEventListener("contextmenu", event => event.preventDefault());
 
+    function sleep(time) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, time);
+        });
+    }
+
     // use BFS to find the path, from start to end
-    function path(map, start, end) {
+    async function path(map, start, end) {
+        container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
         let queue = [start];
 
         function insert(x, y) {
             // Edge check
-            if (x < 0 || x >= 100 || y < 0 || y > 100) {
+            if (x < 0 || x >= 100 || y < 0 || y >= 100) {
                 return;
             }
             // check if the cell is not empty
@@ -79,10 +86,12 @@
 
         while(queue.length) {
             let [x, y] = queue.shift();
-            console.log(x, y);
             if (x == end[0] && y == end[1]) {
                 return true;
             }
+            await sleep(5);
+            container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+            
             insert(x - 1, y);
             insert(x + 1, y);
             insert(x, y - 1);
