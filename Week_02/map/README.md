@@ -9,3 +9,9 @@
 实现：
 * BFS利用**队列**。搜索完一个节点，该节点出队，它的所有子节点入队。
 * DFS利用**栈**（递归本质就是栈）。搜索完一个节点，该节点出栈，它的所有子节点入栈。
+
+## 细节
+
+1.null vs undefinded
+
+这是js的两种**不同**的数据类型. `null` is type of `Object`, `undefinded` is type of `undefinded` 
