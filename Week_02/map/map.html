@@ -19,6 +19,7 @@
 <button onclick="localStorage.clear()">clear</button>
 
 <script>
+    // cell: 0 => empty, 1 => wall, 2 => path
     let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
     
     let container = document.getElementById("container");
@@ -27,7 +28,7 @@
             let cell = document.createElement("div");
             cell.classList.add("cell");
             
-            // set blackground color of selected cell to black
+            // set blackground color of wall to black
             if (map[100*y + x] == 1) {
                 cell.style.backgroundColor = "black"; 
             } 
@@ -57,5 +58,38 @@
     document.addEventListener("mouseup", () => mousedown = false);
     // disable showing context menu when right mouse is pressed down
     document.addEventListener("contextmenu", event => event.preventDefault());
+
+    // use BFS to find the path, from start to end
+    function path(map, start, end) {
+        let queue = [start];
+
+        function insert(x, y) {
+            // Edge check
+            if (x < 0 || x >= 100 || y < 0 || y > 100) {
+                return;
+            }
+            // check if the cell is not empty
+            if (map[y*100 + x]) {
+                return;
+            }
+
+            queue.push([x, y]);
+            map[y*100 + x] = 2;
+        }
+
+        while(queue.length) {
+            let [x, y] = queue.shift();
+            console.log(x, y);
+            if (x == end[0] && y == end[1]) {
+                return true;
+            }
+            insert(x - 1, y);
+            insert(x + 1, y);
+            insert(x, y - 1);
+            insert(x, y + 1);
+        }
+
+        return false; 
+    }
 </script>
 
