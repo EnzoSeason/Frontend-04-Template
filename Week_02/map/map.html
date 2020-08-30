@@ -66,39 +66,54 @@
     }
 
     // use BFS to find the path, from start to end
-    async function path(map, start, end) {
-        container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
+    async function findPath(map, start, end) {
         let queue = [start];
+        let table = Object.create(map);
 
-        function insert(x, y) {
+        function insert(x, y, pre) {
             // Edge check
             if (x < 0 || x >= 100 || y < 0 || y >= 100) {
                 return;
             }
             // check if the cell is not empty
-            if (map[y*100 + x]) {
+            if (table[y * 100 + x]) {
                 return;
             }
 
             queue.push([x, y]);
-            map[y*100 + x] = 2;
+            table[y * 100 + x] = pre;
         }
 
+        container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
+        container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
         while(queue.length) {
             let [x, y] = queue.shift();
-            if (x == end[0] && y == end[1]) {
-                return true;
-            }
-            await sleep(5);
-            container.children[y * 100 + x].style.backgroundColor = "lightgreen";
             
-            insert(x - 1, y);
-            insert(x + 1, y);
-            insert(x, y - 1);
-            insert(x, y + 1);
+            if (x == end[0] && y == end[1]) {
+                let path = [];
+                while (x != start[0] || y != start[1]) {
+                    path.push([x, y]);
+                    await sleep(5);
+                    container.children[y * 100 + x].style.backgroundColor = "red";
+
+                    [x, y] = table[y * 100 + x];
+                }
+                path.push(start);
+                return path;
+            }
+            
+            await sleep(1);
+            if (y * 100 + x !== start[1] * 100 + start[0]) {
+                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+            }
+
+            insert(x - 1, y, [x, y]);
+            insert(x + 1, y, [x, y]);
+            insert(x, y - 1, [x, y]);
+            insert(x, y + 1, [x, y]);
         }
 
-        return false; 
+        return null; 
     }
 </script>
 
