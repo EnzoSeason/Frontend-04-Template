@@ -19,31 +19,65 @@
 <button onclick="localStorage.clear()">clear</button>
 
 <script>
-    class Sorted {
-        constructor(data, compare) {
-            this.data = data.slice(); // copy data
+    class MinHeap {
+        constructor(compare) {
+            this.data = [];
             this.compare = compare || ((a, b) => a - b);
         }
-        take() {
-            if (!this.data.length) {
-                return;
-            }
-            let min = this.data[0];
-            let minIndex = 0;
-            for (let i in this.data) {
-                if (this.compare(this.data[i], min) < 0) {
-                    min = this.data[i];
-                    minIndex = i;
-                }
+        
+        parentIndex(index) {
+            return parseInt((index - 1) / 2);
+        }
+        leftChildIndex(index) {
+            return parseInt(2 * index + 1);
+        }
+        rigthChildIndex(index) {
+            return parseInt(2 * index + 2);
+        }
+
+        length(){ return this.data.length; };
+
+        sort(i) {
+            let left = this.leftChildIndex(i);
+            let right = this.rigthChildIndex(i);
+            let minIndex = i
+
+            if (left < this.data.length && this.compare(this.data[left], this.data[i]) < 0) {
+                minIndex = left;
             }
 
-            // remove the min from the data, and return it
-            this.data[minIndex] = this.data[this.data.length - 1];
-            this.data.pop();
-            return min;
+            if (right < this.data.length && this.compare(this.data[right], this.data[i]) < 0) {
+                minIndex = right;
+            }
+
+            if (i != minIndex) {
+                [this.data[i], this.data[minIndex]] = [this.data[minIndex], this.data[i]];
+                this.sort(minIndex);
+            }
+
         }
-        give(ele) {
-            this.data.push(ele);
+
+        insert(val) {
+            this.data.push(val);
+            let i = this.data.length - 1;
+
+            while (i != 0 && this.compare(this.data[i], this.data[this.parentIndex(i)]) < 0) {
+                [this.data[this.parentIndex(i)], this.data[i]] = [this.data[i], this.data[this.parentIndex(i)]];
+                i = this.parentIndex(i);
+                console.log(2);
+            }
+        }
+
+        extratMin() {
+            if (this.data.length === 0) {
+                return;
+            }
+
+            let min = this.data[0];
+            this.data.shift();
+            this.sort(0);
+
+            return min;
         }
     }
 
@@ -96,8 +130,13 @@
 
     // use BFS to find the path, from start to end
     async function findPath(map, start, end) {
-        let queue = [start];
+        let queue = new MinHeap((a, b) => distance(a) - distance(b));
+        queue.insert(start);
         let table = Object.create(map);
+
+        function distance(point) {
+            return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
+        }
 
         function insert(x, y, pre) {
             // Edge check
@@ -109,20 +148,20 @@
                 return;
             }
 
-            queue.push([x, y]);
+            queue.insert([x, y]);
             table[y * 100 + x] = pre;
         }
 
         container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
         container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
-        while(queue.length) {
-            let [x, y] = queue.shift();
+        while(queue.length()) {
+            let [x, y] = queue.extratMin();
             
             if (x == end[0] && y == end[1]) {
                 let path = [];
                 while (x != start[0] || y != start[1]) {
                     path.push([x, y]);
-                    await sleep(5);
+                    await sleep(10);
                     container.children[y * 100 + x].style.backgroundColor = "red";
 
                     [x, y] = table[y * 100 + x];
@@ -131,7 +170,7 @@
                 return path;
             }
             
-            await sleep(1);
+            await sleep(10);
             if (y * 100 + x !== start[1] * 100 + start[0]) {
                 container.children[y * 100 + x].style.backgroundColor = "lightgreen";
             }
