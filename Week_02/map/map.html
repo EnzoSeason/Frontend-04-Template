@@ -152,7 +152,7 @@
         function cost(point) {
             // g is the length of route (L1), from start point to current point
             let g = point[2];
-            // h is an estimated cost, I set it as distance (L1), from end point to current point
+            // h is an estimated cost, I set it as the distance (L1), from end point to current point
             let h = Math.abs(point[0] - end[0]) + Math.abs(point[1] - end[1]);
             return g + h;
         }
@@ -185,6 +185,11 @@
             }
         }
 
+        // stock the points in format [x, y, gCost]
+        // queue is for searching the path.
+        // table is for tracking the previous point.
+        // compare is for calculating the difference of fCost. (A* algo)
+        // equal is for locating the point in queue.
         let compare = (a, b) => cost(a) - cost(b);
         let equal = (a, b) => a[0] == b[0] && a[1] == b[1];
         let queue = new MinHeap(compare, equal);
