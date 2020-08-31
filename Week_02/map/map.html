@@ -20,9 +20,10 @@
 
 <script>
     class MinHeap {
-        constructor(compare) {
+        constructor(compare, equal) {
             this.data = [];
             this.compare = compare || ((a, b) => a - b);
+            this.equal = equal || ((a, b) => a === b)
         }
         
         parentIndex(index) {
@@ -140,7 +141,7 @@
             return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
         }
 
-        function insert(x, y, pre, route) {
+        function insert(x, y, previousPosition, previousRouteCost) {
             // Edge check
             if (x < 0 || x >= 100 || y < 0 || y >= 100) {
                 return;
@@ -149,15 +150,18 @@
             if (table[y * 100 + x]) {
                 return;
             }
-
-            container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+            // check if the cell is not empty
             queue.insert([x, y]);
-            table[y * 100 + x] = pre;
+            if (y * 100 + x !== start[1] * 100 + start[0]) {
+                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+            }
+            table[y * 100 + x] = previousPosition;
         }
 
         container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
         container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
-
+        
+        let step = 1;
         while(queue.length()) {
             let [x, y] = queue.extratMin();
             
@@ -174,19 +178,21 @@
                 return path;
             }
             
-            await sleep(10);
+            await sleep(1);
             if (y * 100 + x !== start[1] * 100 + start[0]) {
                 container.children[y * 100 + x].style.backgroundColor = "blue";
             }
 
-            insert(x - 1, y - 1, [x, y]);
-            insert(x - 1, y, [x, y]);
-            insert(x - 1, y + 1, [x, y]);
-            insert(x, y - 1, [x, y]);
-            insert(x, y + 1, [x, y]);
-            insert(x + 1, y - 1, [x, y]);
-            insert(x + 1, y, [x, y]);
-            insert(x + 1, y + 1, [x, y]);
+            insert(x - 1, y - 1, [x, y], step);
+            insert(x - 1, y, [x, y], step);
+            insert(x - 1, y + 1, [x, y], step);
+            insert(x, y - 1, [x, y], step);
+            insert(x, y + 1, [x, y], step);
+            insert(x + 1, y - 1, [x, y], step);
+            insert(x + 1, y, [x, y], step);
+            insert(x + 1, y + 1, [x, y], step);
+
+            step ++;
         }
 
         return null; 
