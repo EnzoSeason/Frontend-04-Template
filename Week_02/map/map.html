@@ -20,10 +20,9 @@
 
 <script>
     class MinHeap {
-        constructor(compare, equal) {
+        constructor(compare) {
             this.data = [];
             this.compare = compare || ((a, b) => a - b);
-            this.equal = equal || ((a, b) => a === b)
         }
         
         parentIndex(index) {
@@ -65,23 +64,6 @@
             while (i != 0 && this.compare(this.data[i], this.data[this.parentIndex(i)]) < 0) {
                 [this.data[this.parentIndex(i)], this.data[i]] = [this.data[i], this.data[this.parentIndex(i)]];
                 i = this.parentIndex(i);
-            }
-        }
-
-        remove(val) {
-            let last = this.data.length;
-            
-            if (last === 0) {
-                return;
-            }
-            
-            for (let i in this.data) {
-                if (this.equal(this.data[i], val)) {
-                    [this.data[i], this.data[last]] = [this.data[last], this.data[i]];
-                    let pop = this.data.pop();
-                    this.sort(i);
-                    return pop;
-                }
             }
         }
 
@@ -163,29 +145,19 @@
             if (x < 0 || x >= 100 || y < 0 || y >= 100) {
                 return;
             }
-            // hit the wall, break out
-            if (table[y * 100 + x] === 1) {
+
+            if (table[y * 100 + x]) {
                 return;
             }
-            // check if the cell is not empty
-            if (table[y * 100 + x]) {
-                let previousRoute = table[y * 100 + x][1];
-                if (previousRoute < route) {
-                    return;
-                } else {
-                    queue.remove(table[y * 100 + x][0]);
-                    table[y * 100 + x] = [pre, route];
-                    return;
-                }
-            }
 
+            container.children[y * 100 + x].style.backgroundColor = "lightgreen";
             queue.insert([x, y]);
-            table[y * 100 + x] = [pre, route];
+            table[y * 100 + x] = pre;
         }
 
         container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
         container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
-        let step = 1;
+
         while(queue.length()) {
             let [x, y] = queue.extratMin();
             
@@ -196,7 +168,7 @@
                     await sleep(10);
                     container.children[y * 100 + x].style.backgroundColor = "red";
 
-                    [x, y] = table[y * 100 + x][0];
+                    [x, y] = table[y * 100 + x];
                 }
                 path.push(start);
                 return path;
@@ -204,19 +176,17 @@
             
             await sleep(10);
             if (y * 100 + x !== start[1] * 100 + start[0]) {
-                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+                container.children[y * 100 + x].style.backgroundColor = "blue";
             }
 
-            insert(x - 1, y - 1, [x, y], step);
-            insert(x - 1, y, [x, y], step);
-            insert(x - 1, y + 1, [x, y], step);
-            insert(x, y - 1, [x, y], step);
-            insert(x, y + 1, [x, y], step);
-            insert(x + 1, y - 1, [x, y], step);
-            insert(x + 1, y, [x, y], step);
-            insert(x + 1, y + 1, [x, y], step);
-
-            step ++;
+            insert(x - 1, y - 1, [x, y]);
+            insert(x - 1, y, [x, y]);
+            insert(x - 1, y + 1, [x, y]);
+            insert(x, y - 1, [x, y]);
+            insert(x, y + 1, [x, y]);
+            insert(x + 1, y - 1, [x, y]);
+            insert(x + 1, y, [x, y]);
+            insert(x + 1, y + 1, [x, y]);
         }
 
         return null; 
