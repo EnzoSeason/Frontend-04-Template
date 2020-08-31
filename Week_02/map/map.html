@@ -174,11 +174,15 @@
             if (y * 100 + x !== start[1] * 100 + start[0]) {
                 container.children[y * 100 + x].style.backgroundColor = "lightgreen";
             }
-
+            
+            insert(x - 1, y - 1, [x, y]);
             insert(x - 1, y, [x, y]);
-            insert(x + 1, y, [x, y]);
+            insert(x - 1, y + 1, [x, y]);
             insert(x, y - 1, [x, y]);
             insert(x, y + 1, [x, y]);
+            insert(x + 1, y - 1, [x, y]);
+            insert(x + 1, y, [x, y]);
+            insert(x + 1, y + 1, [x, y]);
         }
 
         return null; 
