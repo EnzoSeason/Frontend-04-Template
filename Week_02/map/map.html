@@ -20,9 +20,10 @@
 
 <script>
     class MinHeap {
-        constructor(compare) {
+        constructor(compare, equal) {
             this.data = [];
             this.compare = compare || ((a, b) => a - b);
+            this.equal = equal || ((a, b) => a === b)
         }
         
         parentIndex(index) {
@@ -64,8 +65,11 @@
             while (i != 0 && this.compare(this.data[i], this.data[this.parentIndex(i)]) < 0) {
                 [this.data[this.parentIndex(i)], this.data[i]] = [this.data[i], this.data[this.parentIndex(i)]];
                 i = this.parentIndex(i);
-                console.log(2);
             }
+        }
+
+        remove(val) {
+
         }
 
         extratMin() {
@@ -131,29 +135,41 @@
     // use BFS to find the path, from start to end
     async function findPath(map, start, end) {
         let queue = new MinHeap((a, b) => distance(a) - distance(b));
-        queue.insert(start);
         let table = Object.create(map);
+
+        queue.insert(start);
 
         function distance(point) {
             return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
         }
 
-        function insert(x, y, pre) {
+        function insert(x, y, pre, step) {
             // Edge check
             if (x < 0 || x >= 100 || y < 0 || y >= 100) {
                 return;
             }
+            // hit the wall, break out
+            if (table[y * 100 + x] === 1) {
+                return;
+            }
             // check if the cell is not empty
             if (table[y * 100 + x]) {
-                return;
+                let previousRoute = table[y * 100 + x][1];
+                if (previousRoute && previousRoute < step) {
+                    return;
+                } else {
+                    console.log(previousRoute);
+                    return;
+                }
             }
 
             queue.insert([x, y]);
-            table[y * 100 + x] = pre;
+            table[y * 100 + x] = [pre, step];
         }
 
         container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
         container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
+        let step = 1;
         while(queue.length()) {
             let [x, y] = queue.extratMin();
             
@@ -164,7 +180,7 @@
                     await sleep(10);
                     container.children[y * 100 + x].style.backgroundColor = "red";
 
-                    [x, y] = table[y * 100 + x];
+                    [x, y] = table[y * 100 + x][0];
                 }
                 path.push(start);
                 return path;
@@ -174,15 +190,17 @@
             if (y * 100 + x !== start[1] * 100 + start[0]) {
                 container.children[y * 100 + x].style.backgroundColor = "lightgreen";
             }
-            
-            insert(x - 1, y - 1, [x, y]);
-            insert(x - 1, y, [x, y]);
-            insert(x - 1, y + 1, [x, y]);
-            insert(x, y - 1, [x, y]);
-            insert(x, y + 1, [x, y]);
-            insert(x + 1, y - 1, [x, y]);
-            insert(x + 1, y, [x, y]);
-            insert(x + 1, y + 1, [x, y]);
+
+            insert(x - 1, y - 1, [x, y], step);
+            insert(x - 1, y, [x, y], step);
+            insert(x - 1, y + 1, [x, y], step);
+            insert(x, y - 1, [x, y], step);
+            insert(x, y + 1, [x, y], step);
+            insert(x + 1, y - 1, [x, y], step);
+            insert(x + 1, y, [x, y], step);
+            insert(x + 1, y + 1, [x, y], step);
+
+            step ++;
         }
 
         return null; 
