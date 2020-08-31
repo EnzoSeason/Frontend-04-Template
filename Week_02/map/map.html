@@ -69,7 +69,20 @@
         }
 
         remove(val) {
-
+            let last = this.data.length;
+            
+            if (last === 0) {
+                return;
+            }
+            
+            for (let i in this.data) {
+                if (this.equal(this.data[i], val)) {
+                    [this.data[i], this.data[last]] = [this.data[last], this.data[i]];
+                    let pop = this.data.pop();
+                    this.sort(i);
+                    return pop;
+                }
+            }
         }
 
         extratMin() {
@@ -134,7 +147,9 @@
 
     // use BFS to find the path, from start to end
     async function findPath(map, start, end) {
-        let queue = new MinHeap((a, b) => distance(a) - distance(b));
+        let compare = (a, b) => distance(a) - distance(b);
+        let equal = (a, b) => a[0] == b[0] && a[1] == b[1];
+        let queue = new MinHeap(compare, equal);
         let table = Object.create(map);
 
         queue.insert(start);
@@ -143,7 +158,7 @@
             return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
         }
 
-        function insert(x, y, pre, step) {
+        function insert(x, y, pre, route) {
             // Edge check
             if (x < 0 || x >= 100 || y < 0 || y >= 100) {
                 return;
@@ -155,16 +170,17 @@
             // check if the cell is not empty
             if (table[y * 100 + x]) {
                 let previousRoute = table[y * 100 + x][1];
-                if (previousRoute && previousRoute < step) {
+                if (previousRoute < route) {
                     return;
                 } else {
-                    console.log(previousRoute);
+                    queue.remove(table[y * 100 + x][0]);
+                    table[y * 100 + x] = [pre, route];
                     return;
                 }
             }
 
             queue.insert([x, y]);
-            table[y * 100 + x] = [pre, step];
+            table[y * 100 + x] = [pre, route];
         }
 
         container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
