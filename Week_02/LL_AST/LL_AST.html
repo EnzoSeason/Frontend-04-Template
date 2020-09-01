@@ -1,7 +1,7 @@
 <script>
-    let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
+    const regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
 
-    let dict = ["Number", "Whitespace", "LineTerminator", "*", "/", "+", "-"];
+    const dict = ["Number", "Whitespace", "LineTerminator", "*", "/", "+", "-"];
 
     function* tokenize(source) {
         let result;
@@ -69,7 +69,7 @@
         return MultiExp(source); 
     }
 
-    let pharse = "10 * 25 / 2";
+    const pharse = "10 * 25 / 2";
     let source = [];
     for (let token of tokenize(pharse)) {
         if (token.type !== "Whitespace" && token.type !== "LineTerminator") {
