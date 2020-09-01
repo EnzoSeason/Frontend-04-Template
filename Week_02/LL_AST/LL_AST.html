@@ -34,7 +34,49 @@
         yield {type: "EOF"};
     }
 
-    for (let token of tokenize("1024 + 10 * 25")) {
-        console.log(token);
+    function MultiExp(source) {
+        if (source[0].type === "Number") {
+            let node = {
+                type: "MultiExp",
+                children: [source[0]]
+            }
+            source[0] = node;
+
+            return MultiExp(source);
+        }
+
+        if (source[0].type === "MultiExp" && source[1] && (source[1].type === "*" || source[1].type === "/" )) {
+            let node = {
+                type: "MultiExp",
+                operator: source[1].type, 
+                children: []
+            }
+            // add the first 3 elements in the source to node
+            for (let i = 0; i < 3; i++) {
+                node.children.push(source.shift());
+            }
+            // add node at the top of the source
+            source.unshift(node);
+
+            return MultiExp(source);
+        }
+
+        if (source[0].type  === "MultiExp") {
+            return source[0];   
+        }
+
+        // never execute
+        return MultiExp(source); 
     }
+
+    let pharse = "10 * 25 / 2";
+    let source = [];
+    for (let token of tokenize(pharse)) {
+        if (token.type !== "Whitespace" && token.type !== "LineTerminator") {
+            source.push(token);
+        }
+    }
+
+    console.log(MultiExp(source));
+
 </script>  
