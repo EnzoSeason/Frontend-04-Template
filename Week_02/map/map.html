@@ -151,6 +151,7 @@
         // implement A star algo
         function cost(point) {
             // g is the length of route (L1), from start point to current point
+            // In the video, winter teacher set g = 0
             let g = point[2];
             // h is an estimated cost, I set it as the distance (L1), from end point to current point
             let h = Math.abs(point[0] - end[0]) + Math.abs(point[1] - end[1]);
@@ -179,9 +180,9 @@
             // node is visited, if previous gCost is bigger than current one, replace it
             let previousGCost = table[y * 100 + x][2];
             if (gCost < previousGCost) {
-                queue.remove(table[y * 100 + x])
+                queue.remove(table[y * 100 + x]);
                 table[y * 100 + x] = [...previousPosition, gCost];
-                queue.insert([...previousPosition, gCost]);
+                queue.insert([x, y, gCost]);
             }
         }
 
