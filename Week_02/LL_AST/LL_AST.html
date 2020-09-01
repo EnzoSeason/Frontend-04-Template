@@ -1,0 +1,40 @@
+<script>
+    let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g
+
+    let dict = ["Number", "Whitespace", "LineTerminator", "*", "/", "+", "-"];
+
+    function* tokenize(source) {
+        let result;
+        let lastIndex = 0;
+        
+        while(true) {
+            lastIndex = regexp.lastIndex;
+            result = regexp.exec(source);
+            
+            // If result is null, break
+            if(!result) break;
+            // Error: Occur unknown type (the type is not in the dict)
+            if(regexp.lastIndex - lastIndex > result[0].length) break;
+
+            let token = {
+                type: null,
+                value: null
+            };
+            
+            // tokenize
+            for (let i = 1; i < dict.length; i++) {
+                if(result[i]) {
+                    token.type = dict[i - 1];
+                }   
+            }
+            token.value = result[0];
+
+            yield token;
+        }
+        yield {type: "EOF"};
+    }
+
+    for (let token of tokenize("1024 + 10 * 25")) {
+        console.log(token);
+    }
+</script>  
