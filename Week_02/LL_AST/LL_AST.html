@@ -35,16 +35,18 @@
     }
 
     function MultiExp(source) {
+        // MultiExp: [Number]
         if (source[0].type === "Number") {
             let node = {
                 type: "MultiExp",
                 children: [source[0]]
             }
+            // replace the first one in source by this node
             source[0] = node;
-
+            // keep MultiExp analysing the rest 
             return MultiExp(source);
         }
-
+        // MultiExp: [MultiExp, operator, Number]
         if (source[0].type === "MultiExp" && source[1] && (source[1].type === "*" || source[1].type === "/" )) {
             let node = {
                 type: "MultiExp",
@@ -52,6 +54,7 @@
                 children: []
             }
             // add the first 3 elements in the source to node
+            // pop up these 3 elements from the source, add the node into the top of it
             for (let i = 0; i < 3; i++) {
                 node.children.push(source.shift());
             }
@@ -60,7 +63,7 @@
 
             return MultiExp(source);
         }
-
+        // MultiExp: [MultiExp]
         if (source[0].type  === "MultiExp") {
             return source[0];   
         }
@@ -69,7 +72,63 @@
         return MultiExp(source); 
     }
 
-    const pharse = "10 * 25 / 2";
+    function AddExp(source) {
+        // AddExp: [MultiExp]
+        if (source[0].type === "MultiExp") {
+            let node = {
+                type: "AddExp",
+                children: [source[0]]
+            }
+            // replace the first one in source by this node
+            source[0] = node;
+            // keep AddExp analysing the rest 
+            return AddExp(source);
+        }
+        // AddExp: [AddExp, operator, MultiExp]
+        if (source[0].type === "AddExp" && source[1] && (source[1].type === "+" || source[1].type === "-" )) {
+            let node = {
+                type: "AddExp",
+                operator: source[1].type, 
+                children: []
+            }
+            // add the first 3 elements in the source to node
+            node.children.push(source.shift());
+            node.children.push(source.shift());
+            // After AddExp and operator removed, we need to do MultiExp before AddExp
+            MultiExp(source);
+            // push the MultiExp into AddExp
+            node.children.push(source.shift());
+            // add node at the top of the source
+            source.unshift(node);
+
+            return AddExp(source);
+        }
+        // AddExp: [AddExp]
+        if (source[0].type  === "AddExp") {
+            return source[0];   
+        }
+
+        // first Multi, then Add. It's the role of the calcul
+        MultiExp(source);
+        return AddExp(source);
+
+    }
+
+    function Exp(source) {
+        if (source[0].type === "AddExp" && source[1] && (source[1].type === "EOF")) {
+            let node = {
+                type: "Exp",
+                children: [source.shift(), source.shift()]
+            }
+            source.unshift(node);
+            return node;
+        }
+        // first Add, then end the analysis by inserting EOF
+        AddExp(source);
+        return Exp(source);
+    }
+
+    const pharse = "1 + 2 * 5 + 3";
     let source = [];
     for (let token of tokenize(pharse)) {
         if (token.type !== "Whitespace" && token.type !== "LineTerminator") {
@@ -77,6 +136,6 @@
         }
     }
 
-    console.log(MultiExp(source));
+    console.log(Exp(source));
 
 </script>  
