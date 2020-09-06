@@ -1,0 +1,57 @@
+<script>
+    let $ = Symbol("$");
+    class Trie {
+        constructor() {
+            this.root = Object.create(null);
+        }
+
+        insert(word) {
+            let node = this.root;
+
+            for (let char of word) {
+                // if char of word is not in the trie, create it
+                if (!node[char]) {
+                    node[char] = Object.create(null);
+                }
+                // move the pointer to the node of current char
+                node = node[char];
+            }
+            // if the word is new, add $ to its end
+            if (!($ in node)) {
+                node[$] = 0;
+            }
+            // set word's Frequence (nb of its apparence in the Trie) 
+            node[$] ++;
+        }
+
+        topFreqWord() {
+            let topFreq = 0;
+            let topWord = null;
+            let visit = (node, word) => {
+                if ($ in node && node[$] > topFreq) {
+                    topFreq = node[$];
+                    topWord = word;
+                }
+                for (let p in node) {
+                    visit(node[p], word + p);
+                }
+            }
+            visit(this.root, "");
+            return [topWord, topFreq];
+        }
+    }
+
+    function randomWord(wordLen) {
+        let s = "";
+        for (let i = 0; i < wordLen; i ++) {
+            s += String.fromCharCode(Math.random() * 26 + "a".charCodeAt(0));
+        }    
+        return s;
+    }
+
+    let trie = new Trie();
+    for (let i = 0; i < 100000; i++) {
+        let word = randomWord(4);
+        trie.insert(word);
+    }
+</script>
