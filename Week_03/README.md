@@ -2,4 +2,4 @@
 
 ## 字符串
 
-[笔记](string/NOTE.md)
+* [字典树](string/trie.md)
