@@ -10,28 +10,28 @@ var strStr = function(haystack, needle) {
         return 0;
     }
     // calcul the Partial match table (failure function)
-    // The goal of the table is to allow the algorithm not to match any character of haystack more than once. 
-    // each element in table represent the previous match INDEX.
-    let table = new Array(needle.length + 1).fill(0);
+    let table = new Array(needle.length).fill(0);
+    table[0] = -1; // -1 means no match.
     let pos = 1; // the current position we are computing in table
     let cnd = 0; // the zero-based index in needle of the next character of the current candidate substring
-    table[0] = -1; // -1 means no match.
 
     while (pos < needle.length) {
         if (needle[pos] === needle[cnd]) {
             table[pos] = table[cnd];
+            // candidate substring increase.
+            cnd ++;
         } else {
             table[pos] = cnd;
-            // find previous match location
+            // find candidate substring，again
             cnd = table[cnd];
             while (cnd >= 0 && needle[pos] !== needle[cnd]) {
                 cnd = table[cnd];
             }
+            // candidate substring increase.
+            cnd++;
         }
-        pos++, cnd++;
+        pos++;
     }
-    // last element in table
-    table[pos] = cnd;
     
     // KMP
     let j = 0; // the position of the current character in haystack
