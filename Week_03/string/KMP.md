@@ -38,3 +38,8 @@ W的首字符不可能在W中出现， 所以`T[0] = -1`。
 ## 边界条件
 
 当`W = ""`时，不管S是什么，直接返回0。因为所有字符串的首位，都是""。
+
+
+## 来源
+
+[维基百科](https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm)
