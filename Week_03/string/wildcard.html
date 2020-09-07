@@ -1,0 +1,57 @@
+<script>
+    function isFound(source, pattern) {
+        // get nb of star in the pattern
+        let starCount = 0;
+        for (let i = 0; i < pattern.length; i++) {
+            if (pattern[i] === "*") {
+                starCount ++;
+            }
+        }
+
+        if (starCount === 0) {
+            for (let i = 0; i < pattern.length; i++) {
+                if (source[i] !== pattern[i] && pattern[i] !== "?") {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        let i; // pointer in pattern
+        let lastIndex; // pointer in source
+        // deal with the part before the first star
+        for (i = 0; pattern[i] !== "*"; i++) {
+            if (source[i] !== pattern[i] && pattern[i] !== "?") {
+                return false;
+            }
+        }
+        lastIndex = i;
+        // deal the part between the first and the last star
+        for (p = 0; p < starCount - 1; p++) {
+            i++;
+            // generate subPattern (the part between 2 adjacent stars)
+            let subPattern = "";
+            while (pattern[i] !== "*") {
+                subPattern += pattern[i];
+                i++;
+            }
+            // find subPattern in source after lastIndex
+            let regExp = new RegExp(subPattern.replace(/\?/s, "[\\s\\S]"), "g");
+            regExp.lastIndex = i;
+
+            if (! regExp.exec(source)) {
+                return false;
+            }
+
+            lastIndex = regExp.lastIndex;
+        }
+        // deal with the part after the last star
+        // from end to start, check
+        for (let j = 1; j < source.length - lastIndex && pattern[pattern.length  - j] !== "*"; j++) {
+            if (source[source.length  - j] !== pattern[pattern.length  - j] && pattern[pattern.length  - j] !== "?") {
+                return false;
+            }
+        }
+        return true;
+    } 
+</script>
