@@ -4,3 +4,6 @@
 
 * [字典树](string/trie.md)
 * [KMP](string/KMP.md)
+
+## Proxy
+[Note](proxy/NOTE.md)

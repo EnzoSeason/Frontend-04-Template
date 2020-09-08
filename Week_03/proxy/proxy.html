@@ -1,0 +1,95 @@
+<input id="r" type="range" min=0 max=255/>
+<input id="g" type="range" min=0 max=255/>
+<input id="b" type="range" min=0 max=255/>
+<div id="color" style="height: 100px; width: 100px;"></div>
+<script>
+    // key: object
+    // val: {prop: callback()}
+    let callbacks = new Map();
+    // key: object
+    // value: proxy of the object
+    let reactivities = new Map();
+    // element: [obj, prop]
+    let usedReactivities = [];
+
+    function reactive(obj) {
+        if (reactivities.has(obj)) {
+            return reactivities.get(obj);
+        }
+        const handler = {
+            get(obj, prop) {
+                // insert get reactivity into usedReactivities
+                usedReactivities.push([obj, prop]);
+                // if obj[prop] is an object
+                // return new Proxy of obj[prop]
+                if (typeof obj[prop] === "object") {
+                    return reactive(obj[prop]); 
+                }
+                return obj[prop];
+            },
+            set(obj, prop, val) {
+                // set target's prop value
+                obj[prop] = val;
+                // invoke callback
+                if (callbacks.has(obj)) {
+                    if (callbacks.get(obj).has(prop)){
+                        for (let callback of callbacks.get(obj).get(prop)){
+                            callback();
+                        }
+                    }
+                }
+                return obj[prop];
+            }
+        };
+        let proxy = new Proxy(obj, handler);
+        reactivities.set(obj, proxy);
+        return proxy;
+    }
+
+    function effect(callback) {
+        // clear usedActivities
+        // callback() will set usedActivities
+        usedActivities = [];
+        callback();
+        // insert callbacks
+        // avoid duplicated reactivity
+        for (let reactivity of usedReactivities) {
+            let obj = reactivity[0];
+            let prop = reactivity[1];
+            
+            if (!callbacks.has(obj)) {
+                callbacks.set(obj, new Map());
+            }
+            if (!callbacks.get(obj).has(prop)) {
+                callbacks.get(obj).set(prop, []);
+            }
+            callbacks.get(obj).get(prop).push(callback);
+        }
+    }
+
+
+    let target = {
+        r: 0,
+        g: 0,
+        b: 0
+    };
+    let po = reactive(target);
+    
+    // two-way bind
+    effect(() => {
+        document.getElementById("r").value  = po.r;
+    });
+    effect(() => {
+        document.getElementById("g").value  = po.g;
+    });
+    effect(() => {
+        document.getElementById("b").value  = po.b;
+    });
+    document.getElementById("r").addEventListener("input", event => po.r = event.target.value);
+    document.getElementById("g").addEventListener("input", event => po.g = event.target.value);
+    document.getElementById("b").addEventListener("input", event => po.b = event.target.value);
+
+    effect(() => {
+        document.getElementById("color").style.background = `rgb(${po.r}, ${po.g}, ${po.b})`;
+    });
+</script>
