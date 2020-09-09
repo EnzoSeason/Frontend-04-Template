@@ -1,4 +1,11 @@
-<div id="dragable" style="height: 100px; width: 100px; background-color: pink;"></div>
+<div id="container">
+    word word word word word word word word word word word word word word word word word word 
+    word word word word word word word word word word word word word word word word word word 
+    word word word word word word word word word word word word word word word word word word 
+    word word word word word word word word word word word word word word word word word word 
+    word word word word word word word word word word word word word word word word word word 
+</div>
+<div id="dragable" style="display: inline-block; height: 100px; width: 100px; background-color: pink;"></div>
 <script>
     let dragable = document.getElementById("dragable");
     let baseX = 0, baseY = 0;
@@ -13,10 +20,41 @@
             document.removeEventListener("mousemove", move);
         };
         let move = (event) => {
-            dragable.style.transform = `translate(${baseX + event.clientX - startX}px, ${baseY + event.clientY - startY}px)`;
+            let range = getNearest(event.clientX, event.clientY);
+            range.insertNode(dragable); // insert the dragable at the start of range.
+            // dragable.style.transform = `translate(${baseX + event.clientX - startX}px, ${baseY + event.clientY - startY}px)`;
         };
 
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
     });
+
+    let container = document.getElementById("container");
+    let textNode = container.childNodes[0];
+    let ranges = [];
+    // save the position of each char in the textNode
+    for (let i = 0; i < textNode.textContent.length; i++) {
+        let range = document.createRange();
+        range.setStart(textNode, i);
+        range.setEnd(textNode, i);
+
+        ranges.push(range);
+    }
+
+    function getNearest(x, y) {
+        let min = Infinity;
+        let nearest = null;
+
+        for (let range of ranges) {
+            let rect = range.getBoundingClientRect();
+            let distance = (rect.x - x) ** 2 + (rect.y - y) ** 2;
+            if (distance < min) {
+                min = distance;
+                nearest = range;
+            }
+        }
+        return nearest;
+    }
+
+    document.addEventListener("selectstart", event => event.preventDefault());
 </script>
