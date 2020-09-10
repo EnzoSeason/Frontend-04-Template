@@ -28,7 +28,7 @@ var KMP = function(source, pattern) {
             // find candidate substring，again
             cnd = table[cnd];
             while (cnd >= 0 && 
-                (pattern[pos] !== pattern[cnd] || pattern[pos] === "?")) {
+                (pattern[pos] !== pattern[cnd] || pattern[pos] !== "?")) {
                 cnd = table[cnd];
             }
             // candidate substring increase.
