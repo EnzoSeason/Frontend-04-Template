@@ -4,7 +4,7 @@
 
 * [字典树](string/trie.md)
 * [KMP](string/KMP.md): leetcode 28 通过。pattern可含有`?`
-* [wildcard](string/wildcard): 用`KMP`代替`regExp.exec(source)`
+* [wildcard](string/wildcard.md): 用`KMP`代替`regExp.exec(source)`
 
 ## Proxy
 [Note](proxy/NOTE.md)
