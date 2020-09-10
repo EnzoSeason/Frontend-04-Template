@@ -1,6 +1,9 @@
 /**
  * Leetcode 28
  * 
+ * addition: pattern includes "?"
+ * "?" matches a single char.
+ * 
  * @param {string} source
  * @param {string} pattern
  * @return {number}
@@ -20,6 +23,9 @@ var KMP = function(source, pattern) {
             table[pos] = table[cnd];
             // candidate substring increase.
             cnd ++;
+        } else if (pattern[pos] === "?"){
+            table[pos] = cnd;
+            cnd ++;
         } else {
             table[pos] = cnd;
             // find candidate substring，again
@@ -38,7 +44,7 @@ var KMP = function(source, pattern) {
     let k = 0; // the position of the current character in pattern
 
     while (j < source.length) {
-        if (pattern[k] === source[j]) {
+        if (pattern[k] === source[j] || pattern[k] === "?") {
             ++j, ++k;
             if (k === pattern.length) {
                 // find the first occurrence
@@ -60,7 +66,7 @@ var KMP = function(source, pattern) {
 // abcdabcdabcex, abcdabce
 // aabaabaaac, aabaaac
 
-let res = KMP("aabaabaaac".toLowerCase(), "aabaaac".toLowerCase());
+let res = KMP("aaaabaaaaaaaaaaaab".toLowerCase(), "a???b".toLowerCase());
 console.log(res);
 
 console.log("end");
