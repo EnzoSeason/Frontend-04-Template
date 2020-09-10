@@ -1,3 +1,4 @@
+<script src="kmp.js"></script>
 <script>
     function isFound(source, pattern) {
         // get nb of star in the pattern
@@ -25,7 +26,7 @@
                 return false;
             }
         }
-        lastIndex = i;
+        // lastIndex = i;
         // deal the part between the first and the last star
         for (p = 0; p < starCount - 1; p++) {
             i++;
@@ -35,15 +36,19 @@
                 subPattern += pattern[i];
                 i++;
             }
-            // find subPattern in source after lastIndex
-            let regExp = new RegExp(subPattern.replace(/\?/s, "[\\s\\S]"), "g");
-            regExp.lastIndex = i;
+            // use RegExp: find subPattern in source after lastIndex
+            // let regExp = new RegExp(subPattern.replace(/\?/s, "[\\s\\S]"), "g");
+            // regExp.lastIndex = i;
 
-            if (! regExp.exec(source)) {
+            // if (! regExp.exec(source)) {
+            //     return false;
+            // }
+
+            // lastIndex = regExp.lastIndex;
+            let middleRes = KMP(source.toLowerCase(), subPattern.toLowerCase());
+            if( middleRes < 0 ){
                 return false;
             }
-
-            lastIndex = regExp.lastIndex;
         }
         // deal with the part after the last star
         // from end to start, check

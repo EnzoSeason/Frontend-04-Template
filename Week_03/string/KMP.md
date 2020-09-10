@@ -53,7 +53,7 @@ Wildcard`?`表示**一个任意**的字符。
 
     `T[pos] = cnd; cnd++`即可。
     
-    `W[pos] === "?"`是`W[pos] ！== W[cnd]`的一种特殊情况： **字面上`W[pos] ！== W[cnd]`， 语义上`W[pos] === W[cnd]`**。所以cnd不用回朔。因为语义上`W[pos] === W[cnd]`已经实现了。
+    `W[pos] === "?"`是`W[pos] ！== W[cnd]`的一种特殊情况： **字面上`W[pos] ！== W[cnd]`， 语义上`W[pos] === W[cnd]`**。
 
 
 ## 来源

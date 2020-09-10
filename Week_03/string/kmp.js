@@ -23,14 +23,12 @@ var KMP = function(source, pattern) {
             table[pos] = table[cnd];
             // candidate substring increase.
             cnd ++;
-        } else if (pattern[pos] === "?"){
-            table[pos] = cnd;
-            cnd ++;
         } else {
             table[pos] = cnd;
             // find candidate substring，again
             cnd = table[cnd];
-            while (cnd >= 0 && pattern[pos] !== pattern[cnd]) {
+            while (cnd >= 0 && 
+                (pattern[pos] !== pattern[cnd] || pattern[pos] === "?")) {
                 cnd = table[cnd];
             }
             // candidate substring increase.
@@ -44,7 +42,7 @@ var KMP = function(source, pattern) {
     let k = 0; // the position of the current character in pattern
 
     while (j < source.length) {
-        if (pattern[k] === source[j] || pattern[k] === "?") {
+        if (pattern[k] === source[j] || pattern[k] === "?") {
             ++j, ++k;
             if (k === pattern.length) {
                 // find the first occurrence
@@ -66,7 +64,7 @@ var KMP = function(source, pattern) {
 // abcdabcdabcex, abcdabce
 // aabaabaaac, aabaaac
 
-let res = KMP("aaaabaaaaaaaaaaaab".toLowerCase(), "a???b".toLowerCase());
-console.log(res);
+// let res = KMP("abcabcabxaac".toLowerCase(), "b?x".toLowerCase());
+// console.log(res);
 
-console.log("end");
+// console.log("end");
