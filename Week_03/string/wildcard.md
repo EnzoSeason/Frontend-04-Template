@@ -28,7 +28,7 @@
 
 如果要替换成`\s`， 要再加个`\`： * "b?".replace(/\?/s, "\\s") *output: b\s*
 
-### [\s\S] 代表所有字符
+### [\s\S] 代表所有字符
 
 * `\s`: Matches a single white space character
 * `\S`: Matches a single character other than white space
