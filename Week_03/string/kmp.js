@@ -1,22 +1,22 @@
 /**
  * Leetcode 28
  * 
- * @param {string} haystacks
- * @param {string} needle
+ * @param {string} source
+ * @param {string} pattern
  * @return {number}
  */
-var strStr = function(haystack, needle) {
-    if (needle === "") {
+var KMP = function(source, pattern) {
+    if (pattern === "") {
         return 0;
     }
     // calcul the Partial match table (failure function)
-    let table = new Array(needle.length).fill(0);
+    let table = new Array(pattern.length).fill(0);
     table[0] = -1; // -1 means no match.
     let pos = 1; // the current position we are computing in table
-    let cnd = 0; // the zero-based index in needle of the next character of the current candidate substring
+    let cnd = 0; // the zero-based index in pattern of the next character of the current candidate substring
 
-    while (pos < needle.length) {
-        if (needle[pos] === needle[cnd]) {
+    while (pos < pattern.length) {
+        if (pattern[pos] === pattern[cnd]) {
             table[pos] = table[cnd];
             // candidate substring increase.
             cnd ++;
@@ -24,7 +24,7 @@ var strStr = function(haystack, needle) {
             table[pos] = cnd;
             // find candidate substring，again
             cnd = table[cnd];
-            while (cnd >= 0 && needle[pos] !== needle[cnd]) {
+            while (cnd >= 0 && pattern[pos] !== pattern[cnd]) {
                 cnd = table[cnd];
             }
             // candidate substring increase.
@@ -34,13 +34,13 @@ var strStr = function(haystack, needle) {
     }
     
     // KMP
-    let j = 0; // the position of the current character in haystack
-    let k = 0; // the position of the current character in needle
+    let j = 0; // the position of the current character in source
+    let k = 0; // the position of the current character in pattern
 
-    while (j < haystack.length) {
-        if (needle[k] === haystack[j]) {
+    while (j < source.length) {
+        if (pattern[k] === source[j]) {
             ++j, ++k;
-            if (k === needle.length) {
+            if (k === pattern.length) {
                 // find the first occurrence
                 return j - k;
             }
@@ -55,6 +55,12 @@ var strStr = function(haystack, needle) {
     return -1
 }
 
-let res = strStr("", "");
+// test cases
+// hello, ll
+// abcdabcdabcex, abcdabce
+// aabaabaaac, aabaaac
+
+let res = KMP("aabaabaaac".toLowerCase(), "aabaaac".toLowerCase());
 console.log(res);
 
+console.log("end");
