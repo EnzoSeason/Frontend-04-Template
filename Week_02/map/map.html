@@ -62,16 +62,17 @@
             this.data.push(val);
             let i = this.data.length - 1;
 
-            while (i != 0 && this.compare(this.data[i], this.data[this.parentIndex(i)]) < 0) {
+            while (this.parentIndex(i) >= 0 && 
+                this.compare(this.data[i], this.data[this.parentIndex(i)]) < 0) {
                 [this.data[this.parentIndex(i)], this.data[i]] = [this.data[i], this.data[this.parentIndex(i)]];
                 i = this.parentIndex(i);
             }
         }
         
         remove(val) {
-            let last = this.data.length;
+            let last = this.data.length - 1;
 
-            if (last === 0) {
+            if (last < 0) {
                 return;
             }
 
