@@ -51,7 +51,7 @@
                 minIndex = right;
             }
 
-            if (i != minIndex) {
+            if (i !== minIndex) {
                 [this.data[i], this.data[minIndex]] = [this.data[minIndex], this.data[i]];
                 this.sort(minIndex);
             }
@@ -62,7 +62,7 @@
             this.data.push(val);
             let i = this.data.length - 1;
 
-            while (i != 0 && 
+            while (i !== 0 && 
                 this.compare(this.data[i], this.data[this.parentIndex(i)]) < 0) {
                 [this.data[this.parentIndex(i)], this.data[i]] = [this.data[i], this.data[this.parentIndex(i)]];
                 i = this.parentIndex(i);
@@ -111,7 +111,7 @@
             cell.classList.add("cell");
             
             // set blackground color of wall to black
-            if (map[100*y + x] == 1) {
+            if (map[100*y + x] === 1) {
                 cell.style.backgroundColor = "black"; 
             } 
 
@@ -194,7 +194,7 @@
         // compare is for calculating the difference of fCost. (A* algo)
         // equal is for locating the point in queue.
         let compare = (a, b) => cost(a) - cost(b);
-        let equal = (a, b) => a[0] == b[0] && a[1] == b[1];
+        let equal = (a, b) => a[0] === b[0] && a[1] === b[1];
         let queue = new MinHeap(compare, equal);
         let table = Object.create(map);
 
@@ -207,9 +207,9 @@
         while(queue.length()) {
             let [x, y, _] = queue.extratMin();
             
-            if (x == end[0] && y == end[1]) {
+            if (x === end[0] && y === end[1]) {
                 let path = [];
-                while (x != start[0] || y != start[1]) {
+                while (x !== start[0] || y !== start[1]) {
                     path.push([x, y]);
                     await sleep(10);
                     container.children[y * 100 + x].style.backgroundColor = "red";
