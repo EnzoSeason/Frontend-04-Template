@@ -120,7 +120,7 @@
 
 
     // cell: 0 => empty, 1 => wall
-    let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0);
+    let map = localStorage['map'] ? JSON.parse(localStorage['map']) : new Array(10000).fill(0);
     let container = document.getElementById("container");
 
     for (let y = 0; y < 100; y ++) {
@@ -184,13 +184,14 @@
                 return;
             }
             // hit the wall, break
-            if (table[y * 100 + x] === 1) {
+            if (prePosMap[y * 100 + x] === 1) {
                 return;
             }
             // node is not visited, insert into queue
-            if (table[y * 100 + x] === 0) {
+            if (prePosMap[y * 100 + x] === 0) {
                 queue.insert([x, y, gCost]);
-                table[y * 100 + x] = [...previousPosition, gCost];
+                prePosMap[y * 100 + x] = [...previousPosition];
+                gCostTable[y * 100 + x] = gCost;
                 
                 if (y * 100 + x !== start[1] * 100 + start[0]) {
                     container.children[y * 100 + x].style.backgroundColor = "lightgreen";
@@ -199,11 +200,12 @@
             }
             // node is visited, if previous gCost is bigger than current one, replace it
             // in this example, never happen
-            if (table[y * 100 + x] !== 0) {
-                let previousGCost = table[y * 100 + x][2];
+            if (prePosMap[y * 100 + x] !== 0) {
+                let previousGCost = gCostTable[y * 100 + x];
                 if (gCost < previousGCost) {
-                    queue.remove(table[y * 100 + x]);
-                    table[y * 100 + x] = [...previousPosition, gCost];
+                    queue.remove(prePosMap[y * 100 + x]);
+                    prePosMap[y * 100 + x] = [...previousPosition, gCost];
+                    gCostTable[y * 100 + x] = gCost;
                     queue.insert([x, y, gCost]);
                     return;
                 } else {
@@ -214,22 +216,25 @@
 
         // stock the points in format [x, y, gCost]
         // queue is for searching the path.
-        // table is for tracking the previous point.
+        // prePosMap is for tracking the previous point.
+        // gCostTable is for tracking gCost of current point.
         // compare is for calculating the difference of fCost. (A* algo)
         // equal is for locating the point in queue.
         let compare = (a, b) => cost(a) - cost(b);
         let equal = (a, b) => a[0] === b[0] && a[1] === b[1];
         let queue = new MinHeap(compare, equal);
-        let table = Object.create(map);
+        let prePosMap = Object.create(map);
+        let gCostTable = new Array(10000).fill(Infinity);
+        gCostTable[start[1] * 100 + start[0]] = 0;
 
         queue.insert([...start, 0]);
 
         container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
         container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
         
-        let gCost = 1;
         while(queue.length()) {
             let [x, y, _] = queue.extratMin();
+            let gCost = gCostTable[y * 100 + x];
             
             if (x === end[0] && y === end[1]) {
                 let path = [];
@@ -238,7 +243,7 @@
                     await sleep(10);
                     container.children[y * 100 + x].style.backgroundColor = "red";
 
-                    [x, y, _] = table[y * 100 + x];
+                    [x, y, _] = prePosMap[y * 100 + x];
                 }
                 path.push(start);
                 return path;
@@ -249,12 +254,10 @@
                 container.children[y * 100 + x].style.backgroundColor = "blue";
             }
 
-            insert(x - 1, y, [x, y], gCost);
-            insert(x, y - 1, [x, y], gCost);
-            insert(x, y + 1, [x, y], gCost);
-            insert(x + 1, y, [x, y], gCost);
-
-            gCost ++;
+            insert(x - 1, y, [x, y], gCost + 1);
+            insert(x, y - 1, [x, y], gCost + 1);
+            insert(x, y + 1, [x, y], gCost + 1);
+            insert(x + 1, y, [x, y], gCost + 1);
         }
 
         return null; 
