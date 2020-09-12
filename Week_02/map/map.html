@@ -41,14 +41,26 @@
         sort(i) {
             let left = this.leftChildIndex(i);
             let right = this.rigthChildIndex(i);
-            let minIndex = i
-
-            if (left < this.data.length && this.compare(this.data[left], this.data[i]) < 0) {
+            let minIndex = i;
+            
+            if (left < this.data.length && right >= this.data.length) {
                 minIndex = left;
             }
 
-            if (right < this.data.length && this.compare(this.data[right], this.data[i]) < 0) {
+            if (left >= this.data.length && right < this.data.length) {
                 minIndex = right;
+            }
+
+            if (left < this.data.length && right < this.data.lengt) {
+                if (this.compare(this.data[left], this.data[right]) <= 0) {
+                    minIndex = left;
+                } else {
+                    minIndex = right;
+                }
+            }
+
+            if (minIndex !== i && this.compare(this.data[i], this.data[minIndex]) <= 0) {
+                minIndex = i;
             }
 
             if (i !== minIndex) {
@@ -91,7 +103,13 @@
                 return;
             }
 
+            if (this.data.length === 1) {
+                let min = this.data.pop();
+                return min;
+            }
+
             let min = this.data[0];
+            // this.data.shift();
             this.data[0] = this.data[this.data.length - 1];
             this.data.pop();
             this.sort(0);
@@ -180,11 +198,17 @@
                 return;
             }
             // node is visited, if previous gCost is bigger than current one, replace it
-            let previousGCost = table[y * 100 + x][2];
-            if (gCost < previousGCost) {
-                queue.remove(table[y * 100 + x]);
-                table[y * 100 + x] = [...previousPosition, gCost];
-                queue.insert([x, y, gCost]);
+            // in this example, never happen
+            if (table[y * 100 + x] !== 0) {
+                let previousGCost = table[y * 100 + x][2];
+                if (gCost < previousGCost) {
+                    queue.remove(table[y * 100 + x]);
+                    table[y * 100 + x] = [...previousPosition, gCost];
+                    queue.insert([x, y, gCost]);
+                    return;
+                } else {
+                    return;
+                }
             }
         }
 
@@ -214,7 +238,7 @@
                     await sleep(10);
                     container.children[y * 100 + x].style.backgroundColor = "red";
 
-                    [x, y] = table[y * 100 + x];
+                    [x, y, _] = table[y * 100 + x];
                 }
                 path.push(start);
                 return path;
