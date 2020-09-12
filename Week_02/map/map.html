@@ -109,9 +109,9 @@
             }
 
             let min = this.data[0];
-            // this.data.shift();
-            this.data[0] = this.data[this.data.length - 1];
-            this.data.pop();
+            this.data.shift();
+            // this.data[0] = this.data[this.data.length - 1];
+            // this.data.pop();
             this.sort(0);
 
             return min;
