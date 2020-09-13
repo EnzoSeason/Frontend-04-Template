@@ -1,0 +1,5 @@
+<BasicExpression> ::== "(" <AdditiveExpression> ")" | <Number> |
+
+<MultiplicativeExpression> ::== <BasicExpression> | <MultiplicativeExpression> "*" <BasicExpression> | <MultiplicativeExpression> "/" <BasicExpression> |
+
+<AdditiveExpression> ::== <MultiplicativeExpression> | <AdditiveExpression> "+" <MultiplicativeExpression> | <AdditiveExpression> "-" <MultiplicativeExpression> |
