@@ -1,3 +1,4 @@
 # 学习笔记
 
-* [JS语言通识](js_basic/NOTE.md)
+* [语言通识](js_basic/language.md)： 包含**语言的分类**和有关**形式语言**的知识。
+
