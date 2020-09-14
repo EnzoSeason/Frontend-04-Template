@@ -1,4 +1,4 @@
-# JS类型（class）
+# JS类型（Type）
 
 Undefinded, Null, Boolean, Number, String, Symbol, Object 
 
@@ -6,7 +6,7 @@ Undefinded, Null, Boolean, Number, String, Symbol, Object
 
 ### 运行时
 
-[Double Float](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
+[IEEE 754 Double Float](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 
 一位符号（Sign）+ 11位指数（Exponent）+ 52位有效数字（Fraction）
 
@@ -92,3 +92,20 @@ Undefinded, Null, Boolean, Number, String, Symbol, Object
 * \u2028, \u2029: 换行符
 
 String Template: 反引号
+
+## Null vs Undefinded
+
+* Null: 有值，但为空
+* Undefinded：没有值
+
+null是关键字，但是，undefined不是关键字，可以被赋值。
+
+如果要表示undefinded，使用`void 0`来产生（其实，void后不管接什么，都返回undefined）。
+
+## Boolean
+
+true, false, 都是关键字
+
+## Symbol
+
+见[object的笔记](object.md)
