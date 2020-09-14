@@ -2,7 +2,7 @@ function UTF8_Encoding(string) {
     let res = [];
     for (let char of string) {
         // get Unicode code points
-        // They are in hex, split by "%"
+        // They are in hex, split by "%" into 2 - 4 parts
         // encodeURI does not encode alphabet
         let code = encodeURIComponent(char);
         let codeList = [];

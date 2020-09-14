@@ -46,7 +46,7 @@ Undefinded, Null, Boolean, Number, String, Symbol, Object
     ```
     U+4E00 = 好
     ```
-    中文"一"在Unicode的码点，是十六进制的**4E00**。
+    中文"一"在Unicode的码点，是**十六进制**的**4E00**。
     
     (`"一".charCodeAt(0).toString()`)。
 
@@ -57,16 +57,28 @@ Undefinded, Null, Boolean, Number, String, Symbol, Object
 
     但，对于中文，需要多个字节表示一个字符。
 
-    在UTF-8中，通过**控制符**来连接多个字符：
+    在UTF-8中，通过**控制符**来连接多个字符(最多4个)：
     * 第一个字符，用`1`表示需要连接多少个字符，以`0`结尾。
     * 之后的字符，以`10`开头
+    * 范围：U+0000 -- U+10FFFF
 
     比如`一`：
 
     **1110**0100 **10**111000 **10**000000
 
-    我们可以用`encodeUrl()`或者`encodeUrlComponent()`对**非英语字符**进行UTF-8编码 ([例子](UTF8_string.js))。
+3. UTF-16
+    同UTF-8一样，也是一种编码方式，**2个字节表示一个字符**。
+    比如， `a`：
+    |Encode|Result|
+    |---|----|
+    | UTF-8 | 01100010
+    | UTF-16| 00000000 01100010
 
+我们可以: 
+* 用`charCodeAt()`对**字符**进行UTF-16编码。
+* 用`encodeUrl()`或者`encodeUrlComponent()`对**字符**进行UTF-8编码 (除了`A-Z a-z 0-9 - _ . ! ~ * ' ( )`)。
+
+[例子](UTF8_string.js)
 ### 语法
 
 * \b: Backspace
