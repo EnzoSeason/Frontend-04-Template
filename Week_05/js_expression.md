@@ -218,3 +218,16 @@ class Person {
 * var的作用域：它所在的函数体
 * let，const的作用域：它所在的区块`{}`
 
+## 宏观和微观任务
+
+采纳 JSC 引擎的术语，我们把**宿主发起的任务**称为宏观任务，把 **JavaScript引擎**发起的任务称为微观任务。
+
+在宏观任务中，JavaScript 的 **Promise 还会产生异步代码（微任务）**，JavaScript 必须保证这些异步代码在一个宏观任务中完成。
+
+## 事件循环
+
+get codes -> execute -> wait -> get codes
+
+## 函数调用
+
+
