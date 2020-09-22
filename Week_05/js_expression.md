@@ -105,11 +105,11 @@ await a;
 
 乘初， 加减， 位移， 关系判断（大于，小于），相等（===， !==），位运算，逻辑判断(&&, ||)，条件判断(condition? case1 : case2)
 
-## 类型转换
+### 类型转换
 
 ![convertion](img/convertion.png)
 
-## 拆箱（unboxing）
+### 拆箱（unboxing）
 
 Object转换成基本类型。`toPremitive`函数参与了这个过程。有3个函数影响`toPremitive`：
 
@@ -136,6 +136,85 @@ console.log("x" + o1) // x1, valueof
 console.log("x" + o2) // x3, toPremitive
 ```
 
-## 装箱（Boxing）
+### 装箱（Boxing）
 
 ![boxing](img/boxing.png)
+
+## Statement语句
+
+### Completion Record
+
+语句通过 Completion Record, 实现语句的控制
+
+* `[[type]]`: normal, break, continue, return, throw
+* `[[value]]`: 基本类型
+* `[[target]]`: label (ie, out: for(...), `out`就是label)
+
+### 简单语句
+
+Expression, Empty (;), Debugger (debugger;), Throw, Continue, Break, Return
+
+### 复合语句
+
+Block, If, Switch, Iteration (for, while, ...), With, Labelled, Try
+
+### 声明（Declaration）
+
+* `function, function *, async function, async function *`: 函数声明
+* `var`
+* `class`
+* `let, const`
+
+#### 预处理(pre-process)
+
+所有的声明都有预处理。
+
+对于`var， function`, 在预处理中，会**变量提升**，提到第一句来执行。`class, let, const`则不会。
+
+```javascript
+// var
+console.log(a); // undefined
+var a = 3;
+// 预处理为
+var a;
+console.log(a); // undefined
+var a = 3;
+
+//  函数
+helloWorld();  // 打印 'Hello World!'
+function helloWorld(){
+  console.log('Hello World!');
+}
+
+// var + 函数
+helloWorld();  // TypeError: helloWorld is not a function
+var helloWorld = function(){
+  console.log('Hello World!');
+}
+// 预处理为
+var helloWorld;
+helloWorld();  // TypeError: helloWorld is not a function
+var helloWorld = function(){
+  console.log('Hello World!');
+}
+
+// let, const
+// 报错
+console.log(b); // ReferenceError
+const b = 3;
+
+// class
+// 报错
+let peter = new Person('Peter', 25); // ReferenceError
+class Person {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+}
+```
+#### 作用域
+
+* var的作用域：它所在的函数体
+* let，const的作用域：它所在的区块`{}`
+
