@@ -230,4 +230,70 @@ get codes -> execute -> wait -> get codes
 
 ## 函数调用
 
+使用**栈**，保存各个函数，已备调用。
+
+* 栈：Execution Context Stack
+* 栈内元素：Execution Context
+* 栈顶元素：Running Execution Context
+
+
+### Execution Context
+
+![exe_context](img/exe_context.png)
+
+### LexicalEnvironment (词法环境)
+
+* this
+* new.target
+* super
+* variable
+
+> 只有`var`的声明会被存到VariableEnvironment
+
+**Environment Record**
+
+链式结构，从上到下：
+* Environment Record (ER)
+* ER -> Declarative ER, Global ER, Object ER
+* Declarative ER -> Function ER, Module ER
+
+### Closure (闭包)
+
+闭包 = 环境(Environment Record) + 代码
+
+JS的每个函数，都会生成闭包. 例子：
+```javascript
+const y = 2;
+function foo2() {
+  console.log(y);
+}
+foo2();
+```
+对于`foo2`:
+* Environment Record: y:2
+* 代码: console.log(y)
+
+常见的闭包：
+```javascript
+const y = 2;
+function foo2() {
+  console.log('out');
+  const z = 3;
+  return function() {
+    console.log('in');
+    console.log(y, z);
+  }
+}
+foo2()();
+```
+
+* 执行`foo2()`时，会形成一个内部闭包，产生`z = 3`。
+* 执行`foo2()()`时，先读取当前环境（y：2），再生成闭包的内部环境（z:3），最后执行闭包（`console.log(y,z)`）。
+
+
+### Realm
+
+在一个js引擎中，所有内置对象会放进一个Realm中。
+
+
 
