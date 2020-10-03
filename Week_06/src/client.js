@@ -13,7 +13,7 @@ class Resquest {
         }
 
         if (this.header['Content-Type'] === 'application/json') {
-            this.bodyText = JSON.parse(this.body);
+            this.bodyText = JSON.stringify(this.body);
         }
 
         if (this.header['Content-Type'] === 'application/x-www-form-urlencoded') {
@@ -25,10 +25,46 @@ class Resquest {
         this.header['Content-Length'] = this.bodyText.length;
     }
 
-    send() {
-        return new Promise((resolve, reject) => {
+    toString() {
+        return `${this.method} ${this.path} HTTP/1.1\n${Object.keys(this.header)
+            .map(key => `${key}: ${this.header[key]}`)
+            .join('\n')}\n\n${this.bodyText}`;
+    }
 
+    send(connection) {
+        return new Promise((resolve, reject) => {
+            const parser = new ResponseParser;
+            if (connection) {
+                connection.write(this.toString());
+            } else {
+                // create TCP connection
+                connection = net.createConnection({
+                    host: this.host,
+                    port: this.port
+                }, () => {
+                    connection.write(this.toString());
+                });
+            }
+            connection.on('data', (data) => {
+                console.log(data.toString());
+                parser.receive(data);
+                if (parse.isFinished) {
+                    resolve(parser.response);
+                    connection.end()
+                }
+            });
+            connection.on('error', (error) => {
+                console.log(error);
+                connection.end();
+            })
         });
+    }
+}
+
+class ResponseParser {
+    constructor() { }
+    receive(string) {
+
     }
 }
 
@@ -42,7 +78,7 @@ void async function (){
             foo: 'test' 
         },
         body: {
-            name: test
+            name: 'test'
         }
     });
 

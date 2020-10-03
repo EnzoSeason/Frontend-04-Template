@@ -7,7 +7,7 @@ http.createServer((req, res) => {
     }).on('data', (chunk) => {
         body.push(chunk.toString());
     }).on('end', () => {
-        body = Buffer.concat(body).toString();
+        body = body.join('&');
         console.log("Body:", body);
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end('Hello World');
