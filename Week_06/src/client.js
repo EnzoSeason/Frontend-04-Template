@@ -80,6 +80,19 @@ class ResponseParser {
 		this.headerValue = ''
 		this.bodyParser = null
     }
+
+    get isFinished() {
+		return this.bodyParser && this.bodyParser.isFinished
+	}
+	get response() {
+		this.statusLine.match(/HTTP\/1\.1 ([0-9]+) ([\s\S]+)/)
+		return {
+			statusCode: RegExp.$1,
+			statusText: RegExp.$2,
+			headers: this.headers,
+			body: this.bodyParser.content.join(''),
+		}
+	}
     
     receive(string) {
         for (let i = 0; i < string.length; i++) {
@@ -106,7 +119,10 @@ class ResponseParser {
 			if (char === ':') {
 				this.current = this.WAITING_HEADER_SPACE
 			} else if (char === '\r') {
-				this.current = this.WAITING_HEADER_BLOCK_END
+                this.current = this.WAITING_HEADER_BLOCK_END
+                if (this.headers['Transfer-Encoding'] === 'chunked') {
+					this.bodyParser = new TrunkedBodyParser()
+				}
 			} else {
 				this.headerName += char
 			}
@@ -132,9 +148,57 @@ class ResponseParser {
 				this.current = this.WAITING_BODY
 			}
 		} else if (this.current === this.WAITING_BODY) {
-            console.log(char)
+            this.bodyParser.receiveChar(char);
 		}
     }
+}
+
+class TrunkedBodyParser {
+	constructor() {
+		this.WAITING_LENGTH = 0
+		this.WAITING_LENGTH_END = 1
+		this.READING_TRUNK = 2
+		this.WAITING_NEW_LINE = 3
+		this.WAITING_NEW_LINE_END = 4
+
+		this.current = this.WAITING_LENGTH
+		this.length = 0
+		this.content = []
+		this.isFinished = false
+	}
+	receiveChar(char) {
+		if (this.current === this.WAITING_LENGTH) {
+			if (char === '\r') {
+				if (this.length === 0) {
+					this.isFinished = true
+					this.current = this.WAITING_NEW_LINE
+				} else {
+					this.current = this.WAITING_LENGTH_END
+				}
+			} else {
+				this.length *= 16
+				this.length += parseInt(char, 16)
+			}
+		} else if (this.current === this.WAITING_LENGTH_END) {
+			if (char === '\n') {
+				this.current = this.READING_TRUNK
+			}
+		} else if (this.current === this.READING_TRUNK) {
+			this.content.push(char)
+			this.length--
+			if (this.length === 0) {
+				this.current = this.WAITING_NEW_LINE
+			}
+		} else if (this.current === this.WAITING_NEW_LINE) {
+			if (char === '\r') {
+				this.current = this.WAITING_NEW_LINE_END
+			}
+		} else if (this.current === this.WAITING_NEW_LINE_END) {
+			if (char === '\n') {
+				this.current = this.WAITING_LENGTH
+			}
+		}
+	}
 }
 
 void async function (){
