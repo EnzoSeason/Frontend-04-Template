@@ -11,7 +11,7 @@ http.createServer((req, res) => {
         body = body.join('&');
         console.log("Body:", body);
         fs.readFile(
-            '/Users/jijieliu/Frontend-04-Template/Week_07/src/index.html', 
+            './index.html', 
             (err, data) => {
                 res.writeHead(200, {'Content-Type': 'text/html'});
                 res.write(data);
