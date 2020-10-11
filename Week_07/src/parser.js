@@ -1,9 +1,55 @@
 const EOF = Symbol("EOF");
 let currentToke = null;
 let currentAttribute = null;
+let currentTextNode = null;
+let stack = [{ type: 'document', children: [] }];
 
 function emit(token) {
-    console.log(token);
+	// console.log(token)
+	let top = stack[stack.length - 1]
+	if (token.type === 'startTag') {
+		let element = {
+			type: 'element',
+			attributes: [],
+			children: [],
+		}
+		element.tagName = token.tagName
+		for (let p in token) {
+			if (p !== 'type' && p !== 'tagName') {
+				element.attributes.push({
+					name: p,
+					value: token[p],
+				})
+			}
+		}
+		element.parent = top
+		computedCSS(element)
+		top.children.push(element)
+
+		if (!token.isSelfClosing) {
+			stack.push(element)
+		}
+		currentTextNode = null
+	} else if (token.type === 'text') {
+		if (currentTextNode === null) {
+			currentTextNode = {
+				type: 'text',
+				content: '',
+			}
+			top.children.push(currentTextNode)
+		}
+		currentTextNode.content += token.content
+	} else if (token.type === 'endTag') {
+		if (top.tagName !== token.tagName) {
+			throw new Error("Tag start end doesn't match!")
+		} else {
+			if (top.tagName === 'style') {
+				addCSSRules(currentTextNode.content)
+			}
+			stack.pop()
+		}
+		currentTextNode = null
+	}
 }
 
 function data(c) {
