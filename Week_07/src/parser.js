@@ -76,6 +76,7 @@ function tagName(c) {
     }
 
     if (c === ">") {
+        emit(currentToken);
         return data;
     }
 
@@ -106,6 +107,7 @@ function beforeAttributeName(c) {
 function selfClosingStartTag(c) {
     if (c === ">") {
         currentToke.isSelfClosing = true;
+        emit(currentToken);
         return data;
     }
 
