@@ -88,20 +88,121 @@ function tagName(c) {
 }
 
 function beforeAttributeName(c) {
-    // space
-    if (c.match(/^[\t\n\f\s]$/)) {
-        return beforeAttributeName;
-    }
+	if (c.match(/^[\t\n\f ]$/)) {
+		return beforeAttributeName
+	} else if (c === '/' || c === '>' || c === EOF) {
+		return afterAttributeName
+	} else if (c === '=') {
+	} else {
+		currentAttribute = {
+			name: '',
+			value: '',
+		}
+		return attributeName(c)
+	}
+}
 
-    if (c === ">") {
-        return data;
-    }
+function afterAttributeName(c) {
+	if (c.match(/^[\t\n\f ]$/)) {
+		return afterAttributeName(c)
+	} else if (c === '/' || c === '>') {
+		return selfClosingStartTag
+	} else if (c === EOF) {
+		return data
+	} else if (c === '=') {
+		return beforeAttributeValue
+	} else {
+		return afterAttributeName
+	}
+}
 
-    if (c === "=") {
-        return beforeAttributeName;
-    }
+function attributeName(c) {
+	if (c.match(/^[\t\n\f ]$/) || c === '/' || c === '>' || c === EOF) {
+		return afterAttributeName(c)
+	} else if (c === '=') {
+		return beforeAttributeValue
+	} else if (c === '\u0000') {
+	} else if (c === '"' || c === "'" || c === '<') {
+	} else {
+		currentAttribute.name += c
+		return attributeName
+	}
+}
 
-    return beforeAttributeName;
+function beforeAttributeValue(c) {
+	if (c.match(/^[\t\n\f ]$/)) {
+		return beforeAttributeValue
+	} else if (c === '"') {
+		return doubleQuotedAttributeValue
+	} else if (c === "'") {
+		return singleQuotedAttributeValue
+	} else if (c === '/' || c === '>' || c === EOF) {
+		return data
+	} else {
+		return UnquotedAttributeValue(c)
+	}
+}
+
+function doubleQuotedAttributeValue(c) {
+	if (c === '"') {
+		currentToken[currentAttribute.name] = currentAttribute.value
+		return afterQuotedAttributeValue
+	} else if (c === '\u0000') {
+	} else if (c === EOF) {
+	} else {
+		currentAttribute.value += c
+		return doubleQuotedAttributeValue
+	}
+}
+
+function singleQuotedAttributeValue(c) {
+	if (c === "'") {
+		currentToken[currentAttribute.name] = currentAttribute.value
+		return afterQuotedAttributeValue
+	} else if (c === '\u0000') {
+	} else if (c === EOF) {
+	} else {
+		currentAttribute.value += c
+		return singleQuotedAttributeValue
+	}
+}
+
+function UnquotedAttributeValue(c) {
+	if (c.match(/^[\t\n\f ]$/)) {
+		currentToken[currentAttribute.name] = currentAttribute.value
+		return beforeAttributeName
+	} else if (c === '/') {
+		currentToken[currentAttribute.name] = currentAttribute.value
+		return selfClosingStartTag
+	} else if (c === '>') {
+		currentToken[currentAttribute.name] = currentAttribute.value
+		emit(currentToken)
+		return data
+	} else if (c === '\u0000') {
+	} else if (c === '"' || c === "'" || c === '<' || c === '=') {
+	} else if (c === EOF) {
+	} else {
+		currentAttribute.value += c
+		return UnquotedAttributeValue
+	}
+}
+
+function afterQuotedAttributeValue(c) {
+	if (c.match(/^[\t\n\f ]$/)) {
+		return afterQuotedAttributeValue
+	} else if (c.match(/^[a-zA-Z]$/)) {
+		return beforeAttributeName(c)
+	} else if (c === '/') {
+		return selfClosingStartTag
+	} else if (c === '>') {
+		currentToken[currentAttribute.name] = currentAttribute.value
+		emit(currentToken)
+		return data
+	} else if (c === EOF) {
+	} else {
+		currentAttribute.value += c
+		return doubleQuotedAttributeValue
+	}
 }
 
 function selfClosingStartTag(c) {
