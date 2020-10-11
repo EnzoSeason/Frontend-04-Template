@@ -1,5 +1,6 @@
 const EOF = Symbol("EOF");
 let currentToke = null;
+let currentAttribute = null;
 
 function emit(token) {
     console.log(token);
