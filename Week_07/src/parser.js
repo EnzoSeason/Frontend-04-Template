@@ -1,15 +1,26 @@
 const EOF = Symbol("EOF");
+let currentToke = null;
 
-function start(c) {
+function emit(token) {
+    console.log(token);
+}
+
+function data(c) {
     if (c === "<") {
         return tagOpen;
     }
     
     if (c === EOF) {
+        emit({
+            type: 'EOF'
+        });
         return;
     } 
-    
-    return start;
+    emit({
+        type: 'text',
+        content: c
+    });
+    return data;
 }
 
 function tagOpen(c) {
@@ -20,6 +31,10 @@ function tagOpen(c) {
 
     // <p 
     if (c.match(/^[a-zA-Z]$/)) {
+        currentToke = {
+            type: 'startTag',
+            tagName: ''
+        };
         return tagName(c);
     }
 
@@ -29,6 +44,10 @@ function tagOpen(c) {
 function endTagOpen(c) {
     // </p
     if (c.match(/^[a-zA-Z]$/)) {
+        currentToke = {
+            type: 'endTag',
+            tagName: ''
+        };
         return tagName(c);
     }
 
@@ -48,6 +67,7 @@ function endTagOpen(c) {
 function tagName(c) {
     // space
     if (c.match(/^[\t\n\f\s]$/)) {
+        currentToke.tagName += c;
         return beforeAttributeName;
     }
 
@@ -56,7 +76,7 @@ function tagName(c) {
     }
 
     if (c === ">") {
-        return start;
+        return data;
     }
 
     if (c.match(/^[a-zA-Z]$/)) {
@@ -73,7 +93,7 @@ function beforeAttributeName(c) {
     }
 
     if (c === ">") {
-        return start;
+        return data;
     }
 
     if (c === "=") {
@@ -86,7 +106,7 @@ function beforeAttributeName(c) {
 function selfClosingStartTag(c) {
     if (c === ">") {
         currentToke.isSelfClosing = true;
-        return start;
+        return data;
     }
 
     // error
@@ -98,7 +118,7 @@ function selfClosingStartTag(c) {
 }
 
 module.exports.parseHTML = function parseHTML(html) {
-    let state = start;
+    let state = data;
     for (let c of html) {
         state = state(c);
     }
