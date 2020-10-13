@@ -1,8 +1,16 @@
 const EOF = Symbol("EOF");
+const css = require('css');
+
 let currentToke = null;
 let currentAttribute = null;
 let currentTextNode = null;
 let stack = [{ type: 'document', children: [] }];
+let rules = [];
+
+function addCSSRules(text) {
+	let ast = css.parse(text);
+	rules.push(...ast.stylesheet.rules);
+}
 
 function emit(token) {
 	// console.log(token)

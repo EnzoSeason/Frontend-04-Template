@@ -16,3 +16,11 @@
 
 * startTag: 读取元素，元素入栈（除了自封闭标签所对应的元素）。文本节点为元素的一部分。
 * endTag: 栈顶出栈。
+
+## CSS计算
+
+使用css包，读取sytle，生成ast，读取ast的rules。
+
+rules中有两项：
+* selector：`div img`
+* declarations: `{ background-color: #ff5000; }`
