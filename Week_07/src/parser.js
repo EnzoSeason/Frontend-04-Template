@@ -1,7 +1,7 @@
 const EOF = Symbol("EOF");
 const css = require('css');
 
-let currentToke = null;
+let currentToken = null;
 let currentAttribute = null;
 let currentTextNode = null;
 let stack = [{ type: 'document', children: [] }];
@@ -30,8 +30,8 @@ function emit(token) {
 				})
 			}
 		}
-		element.parent = top
-		computedCSS(element)
+		// element.parent = top
+		// computedCSS(element)
 		top.children.push(element)
 
 		if (!token.isSelfClosing) {
@@ -49,7 +49,7 @@ function emit(token) {
 		currentTextNode.content += token.content
 	} else if (token.type === 'endTag') {
 		if (top.tagName !== token.tagName) {
-			throw new Error("Tag start end doesn't match!")
+			throw new Error(top.tagName + '!==' + token.tagName)
 		} else {
 			if (top.tagName === 'style') {
 				addCSSRules(currentTextNode.content)
@@ -86,7 +86,7 @@ function tagOpen(c) {
 
     // <p 
     if (c.match(/^[a-zA-Z]$/)) {
-        currentToke = {
+        currentToken = {
             type: 'startTag',
             tagName: ''
         };
@@ -99,7 +99,7 @@ function tagOpen(c) {
 function endTagOpen(c) {
     // </p
     if (c.match(/^[a-zA-Z]$/)) {
-        currentToke = {
+        currentToken = {
             type: 'endTag',
             tagName: ''
         };
@@ -122,7 +122,6 @@ function endTagOpen(c) {
 function tagName(c) {
     // space
     if (c.match(/^[\t\n\f\s]$/)) {
-        currentToke.tagName += c;
         return beforeAttributeName;
     }
 
@@ -136,6 +135,7 @@ function tagName(c) {
     }
 
     if (c.match(/^[a-zA-Z]$/)) {
+		currentToken.tagName += c;
         return tagName;
     }
 
@@ -262,7 +262,7 @@ function afterQuotedAttributeValue(c) {
 
 function selfClosingStartTag(c) {
     if (c === ">") {
-        currentToke.isSelfClosing = true;
+        currentToken.isSelfClosing = true;
         emit(currentToken);
         return data;
     }
