@@ -12,6 +12,31 @@ function addCSSRules(text) {
 	rules.push(...ast.stylesheet.rules);
 }
 
+function specificity(selector) {
+	let p = [0, 0, 0, 0]; // inline style, id, class, tag
+	let selectorParts = selector.split(" ");
+	for (let part of selectorParts) {
+		if (part.charAt(0) === "#") {
+			p[1] += 1;
+		} else if (part.charAt(0) === ".") {
+			p[2] += 1;
+		} else {
+			p[3] += 1;
+		}
+	}
+	return p;
+}
+
+function compare(sp1, sp2) {
+	for (let i = 0; i < 3; i++) {
+		if (sp1[i] - sp2[i]) {
+			return sp1[i] - sp2[i];
+		}
+	}
+	return sp1[3] - sp2[3];
+}
+
+
 /**
  * 3 types of selectors: div .a #b
  * 
@@ -67,13 +92,22 @@ function computedCSS(element) {
 			matched = true;
 		}
 
-		if (match) {
+		if (matched) {
+			let sp = specificity(rule.selectors[0]);
 			let computedStyle = element.computedStyle;
 			for (let declaration of rule.declarations) {
 				if (!computedStyle[declaration.property]) {
 					computedStyle[declaration.property] = {};
 				}
-				computedStyle[declaration.property].value = declaration.value;
+
+				if (!computedStyle[declaration.property].specificity) {
+					computedStyle[declaration.property].value = declaration.value;
+					computedStyle[declaration.property].specificity = sp;
+				} else if (compare(computedStyle[declaration.property].specificity, sp) < 0) {
+					computedStyle[declaration.property].value = declaration.value;
+					computedStyle[declaration.property].specificity = sp;
+				}
+				
 			}
 		}
 	}
@@ -349,5 +383,6 @@ module.exports.parseHTML = function parseHTML(html) {
     for (let c of html) {
         state = state(c);
     }
-    state = state(EOF);
+	state = state(EOF);
+	return stack[0];
 }

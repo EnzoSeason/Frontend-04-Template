@@ -218,4 +218,8 @@ void async function (){
 	let res = await req.send();
 	
 	let dom = htmlParser.parseHTML(res.body);
+
+	console.log(JSON.stringify(dom));
+	
+	console.log('');
 }()
