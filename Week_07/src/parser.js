@@ -103,7 +103,8 @@ function computedCSS(element) {
 				if (!computedStyle[declaration.property].specificity) {
 					computedStyle[declaration.property].value = declaration.value;
 					computedStyle[declaration.property].specificity = sp;
-				} else if (compare(computedStyle[declaration.property].specificity, sp) < 0) {
+				} else if (compare(sp, computedStyle[declaration.property].specificity) < 0) {
+					// current specificity is higher than accent one, overwrite css
 					computedStyle[declaration.property].value = declaration.value;
 					computedStyle[declaration.property].specificity = sp;
 				}
