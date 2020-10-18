@@ -12,6 +12,73 @@ function addCSSRules(text) {
 	rules.push(...ast.stylesheet.rules);
 }
 
+/**
+ * 3 types of selectors: div .a #b
+ * 
+ * @param {*} element 
+ * @param {*} selector 
+ */
+function match(element, selector) {
+	if (!selector || !element.attributes) {
+		return false;
+	}
+
+	if (selector.charAt(0) === "#") {
+		let attr = element.attributes.filter(attr => attr.name === "id")[0];
+		if (attr && attr.value === selector.replace("#", "")) {
+			return true;
+		}
+	} else if (selector.charAt(0) === ".") {
+		let attr = element.attributes.filter(attr => attr.name === "class")[0];
+		if (attr && attr.value === selector.replace(".", "")) {
+			return true;
+		}
+	} else {
+		if (element.tagName === selector) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function computedCSS(element) {
+	let elements = stack.slice().reverse();
+
+	if (!element.computedStyle) {
+		element.computedStyle = {};
+	}
+
+	for (let rule of rules) {
+		let selectorParts = rule.selectors[0].split(" ").reverse();
+
+		if (!match(element, selectorParts[0])) {
+			continue;
+		}
+
+		let matched = false
+		
+		let j = 1; // index of selectorParts
+		for (let i = 0; i < elements.length; i++) {
+			if (match(elements[i], selectorParts[j])) {
+				j++;
+			}
+		}
+		if (j >= selectorParts.length) {
+			matched = true;
+		}
+
+		if (match) {
+			let computedStyle = element.computedStyle;
+			for (let declaration of rule.declarations) {
+				if (!computedStyle[declaration.property]) {
+					computedStyle[declaration.property] = {};
+				}
+				computedStyle[declaration.property].value = declaration.value;
+			}
+		}
+	}
+}
+
 function emit(token) {
 	// console.log(token)
 	let top = stack[stack.length - 1]
@@ -31,7 +98,9 @@ function emit(token) {
 			}
 		}
 		// element.parent = top
-		// computedCSS(element)
+		
+		computedCSS(element);
+		
 		top.children.push(element)
 
 		if (!token.isSelfClosing) {
@@ -270,9 +339,9 @@ function selfClosingStartTag(c) {
     // error
     if (c === EOF) {
 
-    }
-
-    // other errors
+	}
+	
+	return data;
 }
 
 module.exports.parseHTML = function parseHTML(html) {
