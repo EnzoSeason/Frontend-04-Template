@@ -29,7 +29,7 @@ function layout(element) {
     items.sort(function (a, b) {
         return (a.order || 0) - (b.order || 0);
     });
-    
+
     ['width', 'height'].forEach((size) => {
         if (elementStyle[size] === 'auto' || elementStyle[size] === '') {
             elementStyle[size] = null;
@@ -158,25 +158,26 @@ function layout(element) {
             mainSpace -= itemStyle[mainSize];
 
             flexLine.push(item);
-        } else {
+        } else { // may need change line
             // shrink item size to fit mainSpace size
             if (itemStyle[mainSize] > elementStyle[mainSize]) {
                 itemStyle[mainSize] = elementStyle[mainSize];
-            }elementStyle
+            }
 
-            // 剩下空间放不下元素时的处理（换行）
+            // change line
             if (mainSpace < itemStyle[mainSize]) {
-                // 记录当前行的剩余空间（主轴和交叉轴的剩余空间）
                 flexLine.mainSpace = mainSpace;
                 flexLine.crossSpace = crossSpace;
-                // 换行
+
                 flexLine = [item];
                 flexLines.push(flexLine);
+                
                 mainSpace = elementStyle[mainSize];
                 crossSpace = 0;
             } else {
                 flexLine.push(item);
             }
+
             if (itemStyle[crossSize] !== null && itemStyle[crossSize] !== void 0) {
                 crossSpace = Math.max(crossSpace, itemStyle[crossSize]);
             }
@@ -184,7 +185,11 @@ function layout(element) {
         }
     }
     flexLine.mainSpace = mainSpace;
-    flexLine.crossSpace = crossSpace;
+    if (elementStyle.flexWrap === "nowrap" || isAutoMainSize) {
+        flexLine.crossSpace = (elementStyle[crossSize] === void 0) ? crossSpace : elementStyle[crossSize];
+    } else {
+        flexLine.crossSpace = crossSpace;
+    }
 
 }
   
