@@ -24,3 +24,17 @@
 rules中有两项：
 * selector：`div img`
 * declarations: `{ background-color: #ff5000; }`
+
+在`endTag`状态时，读取`style属性，并调用css包来解析css。解析的结果存在一个数组`rule`中。
+
+在`startTag`状态时，读取`rule`数组，将css加载到dom树中。
+
+
+* css selector的读取规则是**从右到左的**：
+    ```css
+    body div img
+    ```
+    img -> div -> body
+* css selector 有优先级： 
+    
+    `inline style > id > class > tag`
