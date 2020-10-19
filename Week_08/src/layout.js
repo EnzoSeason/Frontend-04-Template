@@ -2,8 +2,8 @@ function getStyle(element) {
     if (!element.style) {
       element.style = {};
     }
-    for (const prop in element.computeStyle) {
-      element.style[prop] = element.computeStyle[prop].value;
+    for (const prop in element.computedStyle) {
+      element.style[prop] = element.computedStyle[prop].value;
       const value = element.style[prop].toString();
       if (value.match(/px$/)) {
         element.style[prop] = parseInt(value);
@@ -16,7 +16,7 @@ function getStyle(element) {
 }
 
 function layout(element) {
-    if (!element.computeStyle) {
+    if (!element.computedStyle) {
         return;
     }
     let elementStyle = getStyle(element);
@@ -222,7 +222,7 @@ function layout(element) {
                     const item = items[i];
                     let itemStyle = getStyle(item);
                     if (itemStyle.flex !== null && itemStyle.flex !== void 0) {
-                        flexTotal += flex;
+                        flexTotal += itemStyle.flex;
                         continue;
                     }
                 }
@@ -288,38 +288,38 @@ function layout(element) {
         }
     }
     // init crossBase
-    if (style.flexWrap === 'wrap-reverse') {
+    if (elementStyle.flexWrap === 'wrap-reverse') {
         crossBase = style[crossSize];
     } else {
         crossBase = 0;
     }
     // set crossBase and step by align-content
     let step = 0;
-    if (style.alignContent === 'flex-start') {
+    if (elementStyle.alignContent === 'flex-start') {
         crossBase += 0;
     }
-    if (style.alignContent === 'flex-end') {
+    if (elementStyle.alignContent === 'flex-end') {
         crossBase += crossSign * crossSpace;
     }
-    if (style.alignContent === 'center') {
+    if (elementStyle.alignContent === 'center') {
         crossBase += (crossSign * crossSpace) / 2;
     }
-    if (style.alignContent === 'space-between') {
+    if (elementStyle.alignContent === 'space-between') {
         crossBase += 0;
         step = crossSpace / (flexLines.length - 1);
     }
-    if (style.alignContent === 'space-around') {
+    if (elementStyle.alignContent === 'space-around') {
         step = crossSpace / flexLines.length;
         crossBase += (crossSign * step) / 2;
     }
-    if (style.alignContent === 'stretch') {
+    if (elementStyle.alignContent === 'stretch') {
         crossBase += 0;
         step = 0;
     }
 
     flexLines.forEach((items) => {
         let lineCrossSize =
-            style.alignContent === 'stretch'
+            elementStyle.alignContent === 'stretch'
                 ? items.crossSpace + crossSpace / flexLines.length
                 : items.crossSpace;
         for (let i = 0; i < items.length; i++) {
@@ -327,7 +327,7 @@ function layout(element) {
             let itemStyle = getStyle(item);
             // key line: align reads align-self and align-items (in parent element)
             // align-self has the higher priority
-            let align = itemStyle.alignSelf || style.alignItems;
+            let align = itemStyle.alignSelf || elementStyle.alignItems;
     
             if (!itemStyle[crossSize]) {
                 itemStyle[crossSize] =

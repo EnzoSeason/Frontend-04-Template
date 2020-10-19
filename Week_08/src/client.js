@@ -1,5 +1,7 @@
 const net = require('net');
+const images = require('images');
 const htmlParser = require('./parser.js');
+const render = require('./render.js');
 
 class Resquest {
     constructor(options) {
@@ -218,8 +220,11 @@ void async function (){
 	let res = await req.send();
 	
 	let dom = htmlParser.parseHTML(res.body);
+	dom.style = {};
 
-	console.log(JSON.stringify(dom, null, "    "));
-	
-	console.log('');
+	console.log(JSON.stringify(dom));
+
+	let viewport = images(800, 600);
+	render(viewport, dom);
+	viewport.save('Week_08/out/viewport.jpg');
 }()
