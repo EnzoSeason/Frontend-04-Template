@@ -191,6 +191,83 @@ function layout(element) {
         flexLine.crossSpace = crossSpace;
     }
 
+    // calculate main axis
+    if (mainSpace < 0) {
+        // scale main space and items' main size
+        let scale = elementStyle[mainSize] / (elementStyle[mainSize] - mainSpace);
+        let currentMain = mainBase;
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            let itemStyle = getStyle(item);
+        
+            if (itemStyle.flex) {
+                itemStyle[mainSize] = 0;
+            }
+
+            itemStyle[mainSize] = itemStyle[mainSize] * scale;
+            itemStyle[mainStart] = currentMain;
+            itemStyle[mainEnd] = itemStyle[mainStart] * mainSign * itemStyle[mainSize];
+            currentMain = itemStyle[mainEnd];
+        }
+      } else {
+            flexLines.forEach((items) => {
+                // get flex style
+                let mainSpace = items.mainSpace;
+                let flexTotal = 0;
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    let itemStyle = getStyle(item);
+                    if (itemStyle.flex !== null && itemStyle.flex !== void 0) {
+                        flexTotal += flex;
+                        continue;
+                    }
+                }
+        
+                if (flexTotal > 0) { // items have flex style
+                    let currentMain = mainBase;
+                    for (let i = 0; i < items.length; i++) {
+                        const item = items[i];
+                        let itemStyle = getStyle(item);
+                        if (itemStyle.flex) {
+                            itemStyle[mainSize] = (mainSpace / flexTotal) * itemStyle.flex;
+                        }
+                        itemStyle[mainStart] = currentMain;
+                        itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
+                        currentMain = itemStyle[mainEnd];
+                    }
+                } else { // items don't have flex style
+                    let currentMain = mainBase;
+                    let step = 0;
+                    if (style.justifyContent === 'flex-start') {
+                        // defalut setting
+                    }
+                    if (style.justifyContent === 'flex-end') {
+                        currentMain = mainSpace * mainSign + mainBase;
+                    }
+            
+                    if (style.justifyContent === 'center') {
+                        currensteptMain = (mainSpace / 2) * mainSign + mainBase;
+                    }
+                    if (style.justifyContent === 'space-between') {
+                        step = (mainSpace / (items.length - 1)) * mainSign;
+                    }
+                    if (style.justifyContent === 'space-around') {
+                        step = (mainSpace / items.length) * mainSign;
+                        currentMain = step / 2 + mainBase;
+                    }
+            
+                    for (let i = 0; i < items.length; i++) {
+                        const item = items[i];
+                        let itemStyle = getStyle(item);
+                        itemStyle[mainStart] = currentMain;
+                        itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
+                        currentMain = itemStyle[mainEnd] + step;
+                    }
+                }
+            });
+    }    
+
 }
   
 module.exports = layout;
