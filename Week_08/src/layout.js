@@ -356,10 +356,10 @@ function layout(element) {
                     crossBase +
                     crossSign *
                         (itemStyle[crossSize] !== null && itemStyle[crossSize] !== void 0
-                        ? itemStyle[crossSize]
-                        : 0);
+                            ? itemStyle[crossSize]
+                            : 0);
                 itemStyle[crossSize] =
-                crossSign * (itemStyle[crossEnd] - itemStyle[crossStart]);
+                    crossSign * (itemStyle[crossEnd] - itemStyle[crossStart]);
             }
         }
         crossBase += crossSign * (lineCrossSize + step);
