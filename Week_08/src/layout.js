@@ -29,28 +29,27 @@ function layout(element) {
     items.sort(function (a, b) {
         return (a.order || 0) - (b.order || 0);
     });
-  
-    let style = elementStyle;
+    
     ['width', 'height'].forEach((size) => {
-        if (style[size] === 'auto' || style[size] === '') {
-            style[size] = null;
+        if (elementStyle[size] === 'auto' || elementStyle[size] === '') {
+            elementStyle[size] = null;
         }
     });
 
-    if (!style.flexDirection || style.flexDirection === 'auto') {
-        style.flexDirection = 'row';
+    if (!elementStyle.flexDirection || elementStyle.flexDirection === 'auto') {
+        elementStyle.flexDirection = 'row';
     }
-    if (!style.alignItems || style.alignItems === 'auto') {
-        style.alignItems = 'stretch';
+    if (!elementStyle.alignItems || elementStyle.alignItems === 'auto') {
+        elementStyle.alignItems = 'stretch';
     }
-    if (!style.justifyContent || style.justifyContent === 'auto') {
-        style.justifyContent = 'flex-start';
+    if (!elementStyle.justifyContent || elementStyle.justifyContent === 'auto') {
+        elementStyle.justifyContent = 'flex-start';
     }
-    if (!style.flexWrap || style.flexWrap === 'auto') {
-        style.flexWrap = 'nowrap';
+    if (!elementStyle.flexWrap || elementStyle.flexWrap === 'auto') {
+        elementStyle.flexWrap = 'nowrap';
     }
-    if (!style.alignContent || style.alignContent === 'auto') {
-        style.alignContent = 'stretch';
+    if (!elementStyle.alignContent || elementStyle.alignContent === 'auto') {
+        elementStyle.alignContent = 'stretch';
     }
   
     let mainSize,
@@ -63,7 +62,7 @@ function layout(element) {
         crossEnd,
         crossSign,
         crossBase;
-    if (style.flexDirection === 'row') {
+    if (elementStyle.flexDirection === 'row') {
         mainSize = 'width';
         mainStart = 'left';
         mainEnd = 'right';
@@ -75,19 +74,19 @@ function layout(element) {
         crossEnd = 'bottom';
     }
   
-    if (style.flexDirection === 'row-reverse') {
+    if (elementStyle.flexDirection === 'row-reverse') {
         mainSize = 'width';
         mainStart = 'right';
         mainEnd = 'left';
         mainSign = -1;
-        mainBase = style.width;
+        mainBase = elementStyle.width;
   
         crossSize = 'height';
         crossStart = 'top';
         crossEnd = 'bottom';
     }
   
-    if (style.flexDirection === 'column') {
+    if (elementStyle.flexDirection === 'column') {
         mainSize = 'height';
         mainStart = 'top';
         mainEnd = 'bottom';
@@ -99,19 +98,19 @@ function layout(element) {
         crossEnd = 'right';
     }
   
-    if (style.flexDirection === 'column-reverse') {
+    if (elementStyle.flexDirection === 'column-reverse') {
         mainSize = 'height';
         mainStart = 'top';
         mainEnd = 'bottom';
         mainSign = -1;
-        mainBase = style.height;
+        mainBase = elementStyle.height;
     
         crossSize = 'width';
         crossStart = 'letf';
         crossEnd = 'right';
     }
   
-    if (style.flexWrap === 'wrap-reverse') {
+    if (elementStyle.flexWrap === 'wrap-reverse') {
         const tmp = crossStart;
         crossStart = crossEnd;
         crossEnd = tmp;
@@ -124,17 +123,69 @@ function layout(element) {
     let isAutoMainSize = false;
     // if the main size is not set, use no-wrap 
     // set all the items in one row
-    if (!style[mainSize]) {
+    if (!elementStyle[mainSize]) {
         elementStyle[mainSize] = 0;
         for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 let itemStyle = getStyle(item);
                 if (itemStyle[mainSize] !== null || itemStyle[mainSize]) {
-                    elementStyle[mainSize] = elementStyle[mainSize];
+                    elementStyle[mainSize] = elementStyle[mainSize] + item[mainSize];
                 }
         }
         isAutoMainSize = true;
     }
+
+    let flexLine = [];
+    let flexLines = [flexLine];
+    let mainSpace = elementStyle[mainSize];
+    let crossSpace = 0;
+
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        let itemStyle = getStyle(item);
+        if (itemStyle[mainSize] === null) {
+            itemStyle[mainSize] = 0;
+        }
+        // set crossSpace
+        if (itemStyle[crossSize] !== null && itemStyle[crossSize] !== void 0) {
+            crossSpace = Math.max(crossSpace, itemStyle[crossSize]);
+        }
+        // if item has flex style, then item must be placed inline.
+        if (itemStyle.flex) {
+            flexLine.push(item);
+        } else if (elementStyle.flexWrap === 'nowrap' && isAutoMainSize) {
+            // place item inline
+            mainSpace -= itemStyle[mainSize];
+
+            flexLine.push(item);
+        } else {
+            // shrink item size to fit mainSpace size
+            if (itemStyle[mainSize] > elementStyle[mainSize]) {
+                itemStyle[mainSize] = elementStyle[mainSize];
+            }elementStyle
+
+            // 剩下空间放不下元素时的处理（换行）
+            if (mainSpace < itemStyle[mainSize]) {
+                // 记录当前行的剩余空间（主轴和交叉轴的剩余空间）
+                flexLine.mainSpace = mainSpace;
+                flexLine.crossSpace = crossSpace;
+                // 换行
+                flexLine = [item];
+                flexLines.push(flexLine);
+                mainSpace = elementStyle[mainSize];
+                crossSpace = 0;
+            } else {
+                flexLine.push(item);
+            }
+            if (itemStyle[crossSize] !== null && itemStyle[crossSize] !== void 0) {
+                crossSpace = Math.max(crossSpace, itemStyle[crossSize]);
+            }
+            mainSpace -= itemStyle[mainSize];
+        }
+    }
+    flexLine.mainSpace = mainSpace;
+    flexLine.crossSpace = crossSpace;
+
 }
   
 module.exports = layout;
