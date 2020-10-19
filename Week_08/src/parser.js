@@ -1,6 +1,6 @@
 const EOF = Symbol("EOF");
 const css = require('css');
-const layout = require('./layout');
+const layout = require('./layout.js');
 
 let currentToken = null;
 let currentAttribute = null;

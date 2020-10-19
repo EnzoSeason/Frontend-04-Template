@@ -67,8 +67,8 @@ function layout(element) {
         mainSize = 'width';
         mainStart = 'left';
         mainEnd = 'right';
-        mainSign = +1;
-        mainBase = 0;
+        mainSign = +1; // left to right
+        mainBase = 0; // start point
     
         crossSize = 'height';
         crossStart = 'top';
@@ -119,6 +119,21 @@ function layout(element) {
     } else {
         crossSign = 1;
         crossBase = 0;
+    }
+
+    let isAutoMainSize = false;
+    // if the main size is not set, use no-wrap 
+    // set all the items in one row
+    if (!style[mainSize]) {
+        elementStyle[mainSize] = 0;
+        for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                let itemStyle = getStyle(item);
+                if (itemStyle[mainSize] !== null || itemStyle[mainSize]) {
+                    elementStyle[mainSize] = elementStyle[mainSize];
+                }
+        }
+        isAutoMainSize = true;
     }
 }
   
