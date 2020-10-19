@@ -1,5 +1,6 @@
 const EOF = Symbol("EOF");
 const css = require('css');
+const layout = require('./layout');
 
 let currentToken = null;
 let currentAttribute = null;
@@ -116,48 +117,53 @@ function computedCSS(element) {
 
 function emit(token) {
 	// console.log(token)
-	let top = stack[stack.length - 1]
-	if (token.type === 'startTag') {
+	let top = stack[stack.length - 1];
+	if (token.type === 'startTag') { // add new element into DOM tree
 		let element = {
 			type: 'element',
 			attributes: [],
 			children: [],
 		}
-		element.tagName = token.tagName
+		element.tagName = token.tagName;
 		for (let p in token) {
 			if (p !== 'type' && p !== 'tagName') {
 				element.attributes.push({
 					name: p,
 					value: token[p],
-				})
+				});
 			}
 		}
-		// element.parent = top
-		
 		computedCSS(element);
 		
-		top.children.push(element)
+		top.children.push(element);
 
 		if (!token.isSelfClosing) {
-			stack.push(element)
+			stack.push(element);
 		}
-		currentTextNode = null
-	} else if (token.type === 'text') {
+
+		currentTextNode = null;
+
+	} else if (token.type === 'text') { // add TextNode into element's children in DOM tree
 		if (currentTextNode === null) {
 			currentTextNode = {
 				type: 'text',
 				content: '',
 			}
-			top.children.push(currentTextNode)
+			top.children.push(currentTextNode);
 		}
-		currentTextNode.content += token.content
-	} else if (token.type === 'endTag') {
+		currentTextNode.content += token.content;
+	} else if (token.type === 'endTag') { // compute css, create layout
 		if (top.tagName !== token.tagName) {
 			throw new Error(top.tagName + '!==' + token.tagName)
 		} else {
 			if (top.tagName === 'style') {
 				addCSSRules(currentTextNode.content)
 			}
+			// css layout
+			layout(top);
+			// All the TextNodes and css rules is readed. pop it.
+			// last element is added into DOM tree as a child (top.children.push(element)).
+			// in the end, there is only one node is stack (the root of the DOM tree)
 			stack.pop()
 		}
 		currentTextNode = null
@@ -385,5 +391,6 @@ module.exports.parseHTML = function parseHTML(html) {
         state = state(c);
     }
 	state = state(EOF);
-	return stack[0];
+
+	return stack.pop();
 }
