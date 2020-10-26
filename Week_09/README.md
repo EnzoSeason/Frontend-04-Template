@@ -1,5 +1,9 @@
 # 学习笔记
 
+## CSS general
+
+[css_general](./doc/css_general.md)
+
 * at-rules: 大致9个
     * @charset : https://www.w3.org/TR/css-syntax-3/
     * @import :https://www.w3.org/TR/css-cascade-4/
@@ -28,3 +32,5 @@
             ```
     * Value
         * https://www.w3.org/TR/css-values-4/
+
+* 实验：爬取CSS标准， https://www.w3.org/TR/?tag=css
