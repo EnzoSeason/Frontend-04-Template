@@ -15,11 +15,9 @@
 * 伪类：`:hover`
 * 伪元素：`::before`
 
-## 复合选择器 (Grouping selectors)
+## 复合选择器 
 
-selects all the matching nodes.
-
-* <简单选择器>, <简单选择器>, <简单选择器>
+* <简单选择器><简单选择器><简单选择器>
     * `*`或者`div`写在最前面
     * 伪类，伪元素写在最后面
 
