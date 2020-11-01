@@ -19,3 +19,12 @@ CSS选择器选中的__element__ ，在排版时可能产生多个___box_ 。
 1. 收集盒进行
 2. 行内排布
 3. 行间排布
+
+### 文字与盒在行内混排
+
+1. 盒的尺寸，先后顺序会影响line-top, line-bottom， 不影响text-top, text-bottom
+
+2. inline-box内的文字影响baseline. 
+    
+    解决方法：使用`vertical-align: top/middle/bottom`
+    (top 既是line-top)
