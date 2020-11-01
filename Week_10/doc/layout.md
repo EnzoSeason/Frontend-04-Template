@@ -26,5 +26,4 @@ CSS选择器选中的__element__ ，在排版时可能产生多个___box_ 。
 
 2. inline-box内的文字影响baseline. 
     
-    解决方法：使用`vertical-align: top/middle/bottom`
-    (top 既是line-top)
+    解决方法：使用 `vertical-align: top/middle/bottom` (top 既是line-top)
