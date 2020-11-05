@@ -44,8 +44,10 @@ float 和 clear 组合可以实现换行（过时）
     * absolutely positioned elements
     * block container
 
-* block box with `overflow: visible`
+* block box NOT having `overflow: visible`
 
-    * bfc + float: 两者合并 [demo](../src/bfc1.html)
-    * bfc + margin collapse: 两者的margin合并 [demo](../src/bfc2.html)
+block box `overflow: visible`
+
+* bfc + float: 行盒与float所在盒，合并 （[demo](../src/bfc1.html)）
+* bfc + margin collapse: 两者的margin，合并 （[demo](../src/bfc2.html)）
 
