@@ -4,6 +4,14 @@
 2. 行内排布
 3. 行间排布
 
+## 行模型
+
+* line-top
+* text-top
+* base-line
+* text-botton
+* line-botton
+
 ## 文字与盒在行内混排
 
 1. 盒的尺寸，先后顺序会影响line-top, line-bottom， 不影响text-top, text-bottom
@@ -25,7 +33,7 @@ float 和 clear 组合可以实现换行（过时）
 
 只有BFC中，会有这现象。上面的盒的margin与下面的，重合。
 
-## BFC (Block Formatting Context)
+## **BFC (Block Formatting Context)**
 
 * block container: 里面有BFC
     
