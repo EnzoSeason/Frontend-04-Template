@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Simulation</title>
+  <style>
+    .ball {
+      width:20px;
+      height:20px;
+      background: linear-gradient(45deg, gold 10%, yellow 50%, gold 90%);
+      border-radius:10px;
+      position:absolute;
+      left:0;
+      top:0;
+      transform:translateY(180px);
+    }
+    .button {    
+        display: inline-block;    
+        outline: none;    
+        cursor: pointer;    
+        text-align: center;    
+        text-decoration: none;    
+        font: 14px/100% Arial, Helvetica, sans-serif;    
+        padding: .5em 2em .55em;    
+        text-shadow: 0 1px 1px rgba(0,0,0,.3);    
+        border-radius: .5em;    
+        box-shadow: 0 1px 2px rgba(0,0,0,.2);    
+        background-color: linear-gradient(to bottom, hsl(25,95%,54.1%), hsl(25,95%,84.1%));   
+        border: solid 1px ;
+    }
+  </style>
+</head>
+<body>
+  <label>运动时间：<input value="1000" type="number" id="t" />s</label><br/>
+  <label>初速度：<input value="-21" type="number" id="vy" /> px/s</label><br/>
+  <label>水平速度：<input value="21" type="number" id="vx" /> px/s</label><br/>
+  <label>重力：<input value="10" type="number" id="g" /> px/s²</label><br/>
+  <button class="button" onclick="createBall()">来一个球</button>
+  <script src="./animation.js"></script>
+</body>
+</html>
