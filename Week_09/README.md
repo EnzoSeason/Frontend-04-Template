@@ -2,7 +2,7 @@
 
 ## CSS general
 
-[css_general](./doc/css_general.md)
+[css_general](doc/css_general.md)
 
 * at-rules: 大致9个
     * @charset : https://www.w3.org/TR/css-syntax-3/

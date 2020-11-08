@@ -2,8 +2,17 @@
 
 1. save in the array
 
-    [nb of inline-style, nb of id-selector, nb of class-selector, nb of type-selector]``
+    [
 
+        nb of inline-style, 
+        
+        nb of id-selector (#id), 
+        
+        nb of class-selector (.cls) / attributes selectors ([type="radio"]) / pseudo-classes (:hover), 
+        
+        nb of type-selector (h1) / pseudo-elements (::before)
+    ]
+    
     ```css
     #id div.a#id {
         ...
