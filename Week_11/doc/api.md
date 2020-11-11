@@ -3,6 +3,7 @@
 * [Event](#event)
 * [DOM API](#dom-api)
 * [Range API](#range-api)
+* [CSSOM](#cssom)
 
 ## Event
 
@@ -97,7 +98,7 @@ range操作：
   range.insertNode(document.createTextNode('some text'));
   ```
 
-## 实例
+### 实例
 
 将element内的元素，逆序重排
 
@@ -140,3 +141,85 @@ range操作：
 
     reverseChildren(element);
     ```
+
+## CSSOM
+
+使用`document.styleSheets`获得 CSSOM
+
+* `document.styleSheets[0].cssRules`
+
+    获得  css rules
+
+* `document.styleSheets[0].insertRule("p{color: red;}", 0)`
+
+    插入 css rule
+
+* `document.styleSheets[0].removeRule(0)`
+
+    删除 rule
+
+### CSSStyleRule
+
+大部分的 CSS Rule 是 CSSStyleRule。其他还有很多 @Rules
+
+* selectorText: string
+* style: k-v结构
+
+### getComputedStyle
+
+使用 window API： `window.getComputedStyle(element, [, pseudoElement])`
+
+* element: 元素
+* pseudoElement： 可选, 伪元素
+
+### CSSOM View
+
+window api 可以获得设备的信息：
+
+* `window.innerHeight`, `window.innerWidth`
+
+    viewport, HTML实际渲染的区域大小
+
+* `window.devicePixelRatio`
+
+* ...
+
+window api, 打开新窗口并控制:
+
+* `window.open()`
+* `window.moveBy(deltaX, deltaY)`
+* `window.resizeBy(deltaX, deltaY)`
+
+#### Scroll
+
+* scrollTop, scrollLeft: 当前滚动到的位置
+* scrollWidth, scrollHeight: 可滚动范围的最大值
+* scroll(x, y) / scrollTo(x, y)
+* scrollBy(deltaX, deltaY)
+* scrollIntoView()
+
+#### layout
+
+* `getClientRects()`: 获取元素生成的**所有的盒**
+* `getBoundingClientRects()`: 获取包含元素内容的**一个盒**
+
+## API 组织
+
+[get all api](../src/api.js)
+
+* khronos
+
+  * WebGL
+
+* ECMA
+
+  * ECMAScript
+
+* WHATWG
+
+  * HTML
+
+* W3C
+
+  * webaudio
+  * CG (Community Group)/WG (Work Group)
