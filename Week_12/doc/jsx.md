@@ -1,6 +1,6 @@
 # 为组件添加JSX
 
-## set up
+## set up
 
 1. `npm init`
 
