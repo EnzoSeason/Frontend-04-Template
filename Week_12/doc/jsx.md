@@ -34,7 +34,7 @@
 
 [main](../jsx/main-v2.js)
 
-基于Version 1，创建`Wrapper`, 代理DOM API。
+基于Version 1，创建`Wrapper`, 代理 DOM API。
 
 优点|缺点
 ---|---
