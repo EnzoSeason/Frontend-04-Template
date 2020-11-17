@@ -37,3 +37,7 @@ Carousel类主要做3件事：
 * 创建`div`, 作为轮播的视图区域
 * 记录attributes: 保存图片的路径
 * 渲染：控制轮播的CSS
+
+## 自动播放
+
+对 CSS 操作，详见 `Carousel` 的 `autoplay`
