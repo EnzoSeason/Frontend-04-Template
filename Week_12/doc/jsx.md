@@ -12,14 +12,13 @@
 
 5. `npm install --save-dev @babel/plugin-transform-react-jsx`
 
+6. `npm install --save-dev webpack webpack-cli webpack-dev-server`
+
 创建[webpack.config.js](../jsx/webpack.config.js)
 
 webpack用来打包文件，babel用来转译不同版本的JS
 
 ## 理解JSX
-
-* work space: [main.js](../jsx/main.js)
-* result: [main.html](../jsx/dist/main.html)
 
 ### Version 1：只用HTML元素
 
@@ -31,7 +30,7 @@ webpack用来打包文件，babel用来转译不同版本的JS
 
 ### Version 2: 自定义元素
 
-[main](../jsx/main.js)
+[main](../jsx/main-v2.js)
 
 基于Version 1，创建`Wrapper`, 代理DOM API。
 
