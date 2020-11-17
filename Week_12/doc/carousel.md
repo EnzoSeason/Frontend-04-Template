@@ -1,5 +1,11 @@
 # Carousel
 
+## run
+
+```command
+webpack serve
+```
+
 ## 准备
 
 1. 基于 [main-v2.js](../jsx/main-v2.js), 将 Wrapper 和它的子类放到  [framework.js](../jsx/framework.js).
