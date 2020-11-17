@@ -2,6 +2,8 @@
 
 ## set up
 
+> webpack用来打包文件，babel用来转译不同版本的JS
+
 1. `npm init`
 
 2. `npm install -g webpack webpack-cli`
@@ -14,9 +16,9 @@
 
 6. `npm install --save-dev webpack webpack-cli webpack-dev-server`
 
-创建[webpack.config.js](../jsx/webpack.config.js)
+创建 [webpack.config.js](../jsx/webpack.config.js)
 
-webpack用来打包文件，babel用来转译不同版本的JS
+最后，运行: `webpack serve`
 
 ## 理解JSX
 
