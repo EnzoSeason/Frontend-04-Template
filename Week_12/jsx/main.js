@@ -3,6 +3,7 @@ class Carousel extends Component {
     constructor() {
         super();
         this.attributes = {};
+        this.currentIdx = 0;
     }
     setAttribute(name, value) {
         this.attributes[name] = value;
@@ -20,8 +21,56 @@ class Carousel extends Component {
             child.style.backgroundImage = `url('${imgUrl}')`;
             this.root.appendChild(child);
         }
-        this.autoPlay();
+        // this.autoPlay();
+        this.mouseControl();
+    }
 
+    mouseControl() {
+        this.root.addEventListener('mousedown', event => {
+            let children = this.root.children;
+            // start coordinate within the application's viewport 
+            // at which the event occurred 
+            let startX = event.clientX;
+
+            let move = event => {
+                let vw = this.root.getBoundingClientRect()['width'];
+                let x = event.clientX - startX;
+                let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
+                
+                // move images, the tail is connected to the head
+                // only move the images next to the current one
+                for (let offset of [-1, 0, 1]) { 
+                    let nextIdx = currentIdx + offset;
+                    nextIdx = (nextIdx + children.length) % children.length;
+                    
+                    children[nextIdx].style.transition = 'none';
+                    children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw + x % vw}px)`;
+                }
+            };
+
+            let up = event => {
+                let vw = this.root.getBoundingClientRect()['width'];
+                let x = event.clientX - startX;
+                let currentIdx = this.currentIdx - Math.round(x / vw); // to the nearest whole number
+                
+                const next = Math.sign(x - Math.round(x / vw) - vw / 2 * Math.sign(x));
+                for (let offset of [0, next]) { 
+                    let nextIdx = currentIdx + offset;
+                    nextIdx = (nextIdx + children.length) % children.length;
+                    
+                    children[nextIdx].style.transition = '';
+                    children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw}px)`;
+                }
+
+                this.currentIdx = (currentIdx + children.length) % children.length;
+                
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', up);
+            }
+
+            document.addEventListener('mousemove', move);
+            document.addEventListener('mouseup', up);
+        });
     }
 
     autoPlay() {
