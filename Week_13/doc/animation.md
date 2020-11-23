@@ -143,3 +143,37 @@ export class Timeline {
     }
 }
 ```
+
+## 动态添加 Animation 到 Timeline
+
+到目前为止，animation的初始时间是定死的：
+
+```javascript
+const t = Date.now() - startTime;
+animation.receive(t); 
+```
+
+如果想要控制animation的初始时间，就需要在**注册动画时告诉Timeline每个动画的初始时间**
+
+```javascript
+add(animation, startTime = Date.now()) {
+    this[ANIMATION].add(animation);
+    console.log(startTime);
+    this[START_TIME].set(animation, startTime);
+}
+```
+
+```javascript
+const now = Date.now();
+let t;
+if (this[START_TIME].get(animation) < startTime) {
+    // animation starts before timeline starts
+    t = now - startTime;
+} else {
+    // animation starts after timeline starts
+    t = now - this[START_TIME].get(animation);
+}
+if (t >= 0) { // if t < 0, it means animation is not started yet
+    // run animation
+}
+```

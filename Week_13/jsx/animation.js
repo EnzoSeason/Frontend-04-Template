@@ -1,26 +1,38 @@
 const TICK = Symbol('tick');
 const TICK_HANDLER = Symbol('tick-handler');
 const ANIMATION = Symbol('animation');
+const START_TIME = Symbol('start-time');
 
 export class Timeline {
     constructor() {
         this[ANIMATION] = new Set();
+        this[START_TIME] = new Map(); // key: animation, value: start time
     }
 
     start() {
-        // set start time
+        // set timeline's start time
         const startTime = Date.now();
         
         this[TICK] = () => {
             // calculate the passed time of animation
-            const t = Date.now() - startTime;
+            const now = Date.now();
+            let t;
             for (let animation of this[ANIMATION]) {
-                if (animation.duration > t) {
-                    // animation receives time, update property
-                    animation.receive(t); 
+                if (this[START_TIME].get(animation) < startTime) {
+                    // animation starts before timeline starts
+                    t = now - startTime;
                 } else {
-                    // delete expired animation
-                    this[ANIMATION].delete(animation);
+                    // animation starts after timeline starts
+                    t = now - this[START_TIME].get(animation);
+                }
+                if (t >= 0) { // if t < 0, it means animation is not started yet
+                    if (animation.duration > t) {
+                        // animation receives time, update property
+                        animation.receive(t); 
+                    } else {
+                        // delete expired animation
+                        this[ANIMATION].delete(animation);
+                    }
                 }
             }
             // ask for next frame
@@ -30,8 +42,9 @@ export class Timeline {
         this[TICK]();
     }
 
-    add(animation) {
+    add(animation, startTime = Date.now()) {
         this[ANIMATION].add(animation);
+        this[START_TIME].set(animation, startTime);
     }
 }
 
