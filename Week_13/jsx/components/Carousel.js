@@ -1,4 +1,4 @@
-import { Component } from '../framework';
+import { Component } from '../tools/framework';
 
 class Carousel extends Component {
     constructor() {
