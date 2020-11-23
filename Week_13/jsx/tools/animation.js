@@ -1,37 +1,39 @@
 const TICK = Symbol('tick');
 const TICK_HANDLER = Symbol('tick-handler');
-const ANIMATION = Symbol('animation');
-const TIMELINE_START = Symbol('timeline_start')
-const ANIMATION_START = Symbol('start-time');
+const ANIMATIONS = Symbol('animations');
+const TIMELINE_START = Symbol('timeline-start')
+const ANIMATION_START = Symbol('animation-start');
 const PAUSE_START = Symbol('pause-start');
-const PAUSE_END = Symbol('pause-end');
+const PAUSED_TIME = Symbol('pause-time');
 export class Timeline {
     constructor() {
         this[TIMELINE_START] = Date.now();
 
-        this[ANIMATION] = new Set();
+        this[ANIMATIONS] = new Set();
         this[ANIMATION_START] = new Map(); // key: animation, value: start time
-        this[PAUSE_END] = 0; // init PAUSE_END as 0, means never paused
+        this[PAUSED_TIME] = 0; // init PAUSED_TIME as 0, means never paused
 
         this[TICK] = () => {
-            // calculate the passed time of animation
             const now = Date.now();
             let t;
-            for (let animation of this[ANIMATION]) {
+
+            for (let animation of this[ANIMATIONS]) {
                 if (this[ANIMATION_START].get(animation) < this[TIMELINE_START]) {
                     // animation starts before timeline starts
-                    t = now - this[TIMELINE_START] - this[PAUSE_END];
+                    t = now - this[TIMELINE_START];
                 } else {
                     // animation starts after timeline starts
-                    t = now - this[ANIMATION_START].get(animation) - this[PAUSE_END];
+                    t = now - this[ANIMATION_START].get(animation);
                 }
+                t -= this[PAUSED_TIME]; // remove paused time
+                
                 if (t >= 0) { // if t < 0, it means animation is not started yet
                     if (animation.duration > t) {
                         // animation receives time, update property
                         animation.receive(t); 
                     } else {
                         // delete expired animation
-                        this[ANIMATION].delete(animation);
+                        this[ANIMATIONS].delete(animation);
                     }
                 }
             }
@@ -50,12 +52,12 @@ export class Timeline {
     }
 
     resume() {
-        this[PAUSE_END] += Date.now() - this[PAUSE_START];
+        this[PAUSED_TIME] += Date.now() - this[PAUSE_START];
         this[TICK](); 
     }
 
     add(animation, startTime = Date.now()) {
-        this[ANIMATION].add(animation);
+        this[ANIMATIONS].add(animation);
         this[ANIMATION_START].set(animation, startTime);
     }
 }

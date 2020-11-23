@@ -119,27 +119,26 @@ export class Timeline {
 ```javascript
 
 export class Timeline {
-    start() {
-        // set start time
-        const startTime = Date.now();
+    constructor() {
+        this[TIMELINE_START] = Date.now();
+        this[ANIMATIONS] = new Set();
+        // other setting ...
         
         this[TICK] = () => {
             // calculate the passed time of animation
-            const t = Date.now() - startTime;
-            for (let animation of this[ANIMATION]) {
+            const t = Date.now() - this[TIMELINE_START];
+            for (let animation of this[ANIMATIONS]) {
                 if (animation.duration > t) {
                     // animation receives time, update property
                     animation.receive(t); 
                 } else {
                     // delete expired animation
-                    this[ANIMATION].delete(animation);
+                    this[ANIMATIONS].delete(animation);
                 }
             }
             // ask for next frame
             requestAnimationFrame(this[TICK]);
         }
-        // run
-        this[TICK]();
     }
 }
 ```
@@ -149,7 +148,7 @@ export class Timeline {
 到目前为止，animation的初始时间是定死的：
 
 ```javascript
-const t = Date.now() - startTime;
+const t = Date.now() - this[TIMELINE_START];
 animation.receive(t); 
 ```
 
@@ -157,23 +156,54 @@ animation.receive(t);
 
 ```javascript
 add(animation, startTime = Date.now()) {
-    this[ANIMATION].add(animation);
-    console.log(startTime);
-    this[START_TIME].set(animation, startTime);
+    this[ANIMATIONS].add(animation);
+    this[ANIMATION_START].set(animation, startTime);
 }
 ```
 
 ```javascript
 const now = Date.now();
 let t;
-if (this[START_TIME].get(animation) < startTime) {
+if (this[ANIMATION_START].get(animation) < startTime) {
     // animation starts before timeline starts
     t = now - startTime;
 } else {
     // animation starts after timeline starts
-    t = now - this[START_TIME].get(animation);
+    t = now - this[ANIMATION_START].get(animation);
 }
 if (t >= 0) { // if t < 0, it means animation is not started yet
     // run animation
+}
+```
+
+## 暂停 / 继续 动画
+
+如果想实现“暂停 / 继续”动画，我们必须控制整个**Timeline**的时间（不是每个 animation 的时间）
+
+* `PAUSE_START` : 暂停的初始时间
+* `PAUSED_TIME` : 暂停的**总**时长
+
+```javascript
+pause() {
+    this[PAUSE_START] = Date.now();
+    cancelAnimationFrame(this[TICK_HANDLER]);
+}
+
+resume() {
+    this[PAUSE_TIME] += Date.now() - this[PAUSE_START];
+    this[TICK](); 
+}
+```
+
+```javascript
+this[TICK] = () => {
+    let t;
+    for (let animation of this[ANIMATIONS]) {
+        // init t
+        t -= this[PAUSED_TIME]; // remove paused time
+        // pass t to animation, and execute the animation
+    }
+    // ask for next frame
+    this[TICK_HANDLER] = requestAnimationFrame(this[TICK]);
 }
 ```
