@@ -7,11 +7,7 @@ const PAUSE_START = Symbol('pause-start');
 const PAUSED_TIME = Symbol('pause-time');
 export class Timeline {
     constructor() {
-        this[TIMELINE_START] = Date.now();
-
-        this[ANIMATIONS] = new Set();
-        this[ANIMATION_START] = new Map(); // key: animation, value: start time
-        this[PAUSED_TIME] = 0; // init PAUSED_TIME as 0, means never paused
+        this.init();
 
         this[TICK] = () => {
             const now = Date.now();
@@ -26,6 +22,7 @@ export class Timeline {
                     t = now - this[ANIMATION_START].get(animation);
                 }
                 t -= this[PAUSED_TIME]; // remove paused time
+                t -= animation.delay; // apply delay
                 
                 if (t >= 0) { // if t < 0, it means animation is not started yet
                     if (animation.duration > t) {
@@ -42,6 +39,17 @@ export class Timeline {
         }
     }
 
+    init() {
+        this[TIMELINE_START] = Date.now();
+
+        this[ANIMATIONS] = new Set();
+        this[ANIMATION_START] = new Map(); // key: animation, value: start time
+        this[PAUSED_TIME] = 0; // init PAUSED_TIME as 0, means never paused
+
+        this[PAUSE_START] = 0;
+        this[TICK_HANDLER] = null;
+    }
+
     start() {
         this[TICK]();
     }
@@ -56,6 +64,11 @@ export class Timeline {
         this[TICK](); 
     }
 
+    reset() {
+        cancelAnimationFrame(this[TICK_HANDLER]);
+        this.init();
+    }
+
     add(animation, startTime = Date.now()) {
         this[ANIMATIONS].add(animation);
         this[ANIMATION_START].set(animation, startTime);
@@ -65,19 +78,21 @@ export class Timeline {
 export class Animation {
     constructor(
         object, property, 
-        startValue, endValue, duration,
+        startValue, endValue, duration, delay,
         timingFn, template) {
             this.object = object;
             this.property = property;
             this.startValue = startValue;
             this.endValue = endValue;
             this.duration = duration;
-            this.timingFn = timingFn;
-            this.template = template;
+            this.delay = delay;
+            this.timingFn = timingFn || (v => v);
+            this.template = template || (v => v);
         }
     
     receive(time) {
-        let range = this.endValue - this.startValue;
-        this.object[this.property] = this.template(this.startValue + range * time / this.duration);
+        const range = this.endValue - this.startValue;
+        const progress = this.timingFn(time / this.duration);
+        this.object[this.property] = this.template(this.startValue + range * progress);
     }
 }
