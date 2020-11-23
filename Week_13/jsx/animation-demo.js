@@ -1,11 +1,17 @@
 import { Timeline, Animation } from './tools/animation.js';
 
-let tl = new Timeline();
+let tl = new Timeline(); 
 let animation = new Animation(
-    {set a(v) {console.log(v)}},"a",0,100,1000,null
+    document.querySelector('#el').style,
+    "transform",
+     0, 500, 2000,
+     null, v => `translateX(${v}px)`
 );
 
-window.tl = tl;
-window.animation = animation;
+document.querySelector('#el').addEventListener('mouseover', () => tl.pause());
+document.querySelector('#el').addEventListener('mouseout', () => tl.resume());
 
 tl.start();
+setTimeout(() => {
+    tl.add(animation);
+}, 1000);
