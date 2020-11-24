@@ -42,7 +42,7 @@ export class Timeline {
     init() {
         this[TIMELINE_START] = Date.now();
 
-        this[ANIMATIONS] = new Set();
+        this[ANIMATIONS] = new Set(); // all the animations in the timeline
         this[ANIMATION_START] = new Map(); // key: animation, value: start time
         this[PAUSED_TIME] = 0; // init PAUSED_TIME as 0, means never paused
 
