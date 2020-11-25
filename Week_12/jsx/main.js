@@ -53,7 +53,7 @@ class Carousel extends Component {
                 let x = event.clientX - startX;
                 let currentIdx = this.currentIdx - Math.round(x / vw); // to the nearest whole number
                 
-                const next = Math.sign(x - Math.round(x / vw) - vw / 2 * Math.sign(x));
+                const next = Math.sign(x - vw / 2 * Math.sign(x));
                 for (let offset of [0, next]) { 
                     let nextIdx = currentIdx + offset;
                     nextIdx = (nextIdx + children.length) % children.length;
@@ -98,7 +98,9 @@ class Carousel extends Component {
 const images = [
     "./asset/img/1.jpg",
     "./asset/img/2.jpg",
-    "./asset/img/3.jpg"
+    "./asset/img/3.jpg",
+    "./asset/img/4.jpg",
+    "./asset/img/5.jpg",
 ]
 const a = <Carousel  src={images} />;
 

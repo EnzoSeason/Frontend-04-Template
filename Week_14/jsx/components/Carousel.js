@@ -54,7 +54,7 @@ class Carousel extends Component {
                 let x = event.clientX - startX;
                 let currentIdx = this.currentIdx - Math.round(x / vw); // to the nearest whole number
                 
-                const next = Math.sign(x - Math.round(x / vw) - vw / 2 * Math.sign(x));
+                const next = Math.sign(x - vw / 2 * Math.sign(x));
                 for (let offset of [0, next]) { 
                     let nextIdx = currentIdx + offset;
                     nextIdx = (nextIdx + children.length) % children.length;
