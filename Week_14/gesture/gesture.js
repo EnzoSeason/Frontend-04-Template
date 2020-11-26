@@ -3,21 +3,18 @@ const el = document.documentElement;
 // mouse
 
 el.addEventListener('mousedown', event => {
-    const move = event => {
-        // main action
-        move(event);
-    }
+    const mouseMove = event => move(event);
 
-    const up = event => {
+    const mouseUp = event => {
         // remove listeners
         end(event);
-        el.removeEventListener('mousemove', move);
-        el.removeEventListener('mouseup', up);
+        el.removeEventListener('mousemove', mouseMove);
+        el.removeEventListener('mouseup', mouseUp);
     }
 
     start(event);
-    el.addEventListener('mousemove', move);
-    el.addEventListener('mouseup', up);
+    el.addEventListener('mousemove', mouseMove);
+    el.addEventListener('mouseup', mouseUp);
 });
 
 // touch
@@ -49,18 +46,74 @@ el.addEventListener('touchcancel', event => {
 
 // function
 
+// start point
+let startX, startY;
+// state: tap, pan, press
+let isTap = false;
+let isPan = false;
+let isPress = false;
+// press handler: 0.5s tap => press
+let pressHandler;
+
 const start = point => {
-    console.log('start', point.clientX, point.clientY);
+    startX = point.clientX, startY = point.clientY;
+    // tap start
+    isTap = true;
+    isPan = false;
+    isPress = false;
+    console.log('tap start');
+    
+    pressHandler = setTimeout(() => {
+        // press start
+        isTap = false;
+        isPan = false;
+        isPress = true;
+        pressHandler = null;
+        console.log('press start');
+    }, 500);
 }
 
 const move = point => {
-    console.log('move', point.clientX, point.clientY);
+    let dx = point.clientX - startX;
+    let dy = point.clientY - startY;
+
+    if (!isPan && dx ** 2 + dy ** 2 > 100) {
+        // pan start
+        isTap = false;
+        isPan = true;
+        isPress = false;
+        clearTimeout(pressHandler);
+        console.log('pan start');
+    }
+
+    if (isPan) {
+        // pan move
+        isTap = false;
+        isPan = true;
+        isPress = false;
+        console.log('pan move');
+    }
 }
 
 const end = point => {
-    console.log('end', point.clientX, point.clientY);
+    if (isTap) {
+        // tap end
+        console.log('tap end');
+        clearTimeout(pressHandler);
+    }
+
+    if (isPress) {
+        // press end
+        console.log('press end');
+    }
+
+    if (isPan) {
+        // pan end
+        console.log('pan end')
+    }
 }
 
 const cancel = point => {
-    console.log('cancel', point.clientX, point.clientY);
+    clearTimeout(pressHandler);
+    console.log('cancel');
 }
