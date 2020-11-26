@@ -4,6 +4,21 @@
 
 ![gesture](../img/gesture.png)
 
+重点：
+
+1. **三种动作**：tap, pan, press， 初始**状态**为 `tap start`。 **状态变化**时要**更新动作**。
+
+2. 进入 press 的条件：tap 超过 0.5s
+
+    实现: 
+    * `tap start`: `pressHandler = setTimeout(() =>{ // press start }, 500)`
+    
+    * `tap end`, `pan start`: `clearTimeout(pressHandle)` 
+    
+    * `press start`: `pressHandler = null`
+
+
+
 ## 鼠标和触控
 
 * **鼠标拖拽**
