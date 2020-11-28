@@ -1,25 +1,64 @@
 const el = document.documentElement;
 
+let contexts = new Map();
+let isListeningMouse = false;
+
 // mouse
 
 el.addEventListener('mousedown', event => {
-    const mouseMove = event => move(event);
+    console.log(event.button, event.buttons);
+    
+    let context = Object.create(null);
+    const button = 1 << event.button; // exemple, event.button === 2, button === 00100
+    // here, the button we created:
+    // left: 0b00001
+    // rigth: 0b00100 (not 0b00010 in event.buttons) 
+    // middle: 0b00010 (not 0b00100 in event.buttons)
+    
+    contexts.set('mouse' + button, context);
+    start(event, context);
+
+    const mouseMove = event => {
+        let key = 1; // key in event.buttons
+        // loop for all the mouse buttons
+        while (key <= event.buttons) {
+            if (key & event.buttons) { // 1&1 = 1; 其他都是0；取一个数的指定位
+                let button = key;
+                if (key === 2 ) { // 0b00010: middle
+                    button = 4;
+                }
+                if (key === 4) { // 0b00100
+                    button = 2;
+                }
+                let context = contexts.get('mouse'+button);
+                move(event, context);
+            }
+            key = key << 1;
+        }
+    };
 
     const mouseUp = event => {
-        // remove listeners
-        end(event);
-        el.removeEventListener('mousemove', mouseMove);
-        el.removeEventListener('mouseup', mouseUp);
+        const button = 1 << event.button;
+        let context = contexts.get('mouse' + button);
+
+        end(event, context);
+        contexts.delete('mouse' + button);
+
+        if (event.buttons === 0) { // no button on the mouse is pressed
+            el.removeEventListener('mousemove', mouseMove);
+            el.removeEventListener('mouseup', mouseUp);
+            isListeningMouse = false;
+        }
     }
 
-    start(event);
-    el.addEventListener('mousemove', mouseMove);
-    el.addEventListener('mouseup', mouseUp);
+    if (!isListeningMouse) {
+        el.addEventListener('mousemove', mouseMove);
+        el.addEventListener('mouseup', mouseUp);
+        isListeningMouse = true;
+    }
 });
 
 // touch
-
-let contexts = new Map();
 
 el.addEventListener('touchstart', event => {
     for (let touch of event.changedTouches) {
@@ -70,7 +109,7 @@ const start = (point, context) => {
     context.isTap = true;
     context.isPan = false;
     context.isPress = false;
-    console.log('tap start');
+    console.log('tap start', point);
     
     context.pressHandler = setTimeout(() => {
         // press start
@@ -78,7 +117,7 @@ const start = (point, context) => {
         context.isPan = false;
         context.isPress = true;
         context.pressHandler = null;
-        console.log('press start');
+        console.log('press start', point);
     }, 500);
 }
 
@@ -92,7 +131,7 @@ const move = (point, context) => {
         context.isPan = true;
         context.isPress = false;
         clearTimeout(context.pressHandler);
-        console.log('pan start');
+        console.log('pan start', point);
     }
 
     if (context.isPan) {
@@ -100,29 +139,29 @@ const move = (point, context) => {
         context.isTap = false;
         context.isPan = true;
         context.isPress = false;
-        console.log('pan move');
+        console.log('pan move', point);
     }
 }
 
 const end = (point, context) => {
     if (context.isTap) {
         // tap end
-        console.log('tap end');
+        console.log('tap end', point);
         clearTimeout(context.pressHandler);
     }
 
     if (context.isPress) {
         // press end
-        console.log('press end');
+        console.log('press end', point);
     }
 
     if (context.isPan) {
         // pan end
-        console.log('pan end')
+        console.log('pan end', point);
     }
 }
 
 const cancel = (point, context) => {
     clearTimeout(context.pressHandler);
-    console.log('cancel');
+    console.log('cancel', point);
 }
