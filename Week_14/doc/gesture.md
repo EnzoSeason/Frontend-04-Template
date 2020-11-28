@@ -151,3 +151,7 @@ function dispatch(type, props) {
 * Dipatcher: 派发自建的手势
 
 Listener => Recognizer => Dipatcher
+
+## 调试
+
+使用 http-server
