@@ -19,27 +19,36 @@ el.addEventListener('mousedown', event => {
 
 // touch
 
+let contexts = new Map();
+
 el.addEventListener('touchstart', event => {
     for (let touch of event.changedTouches) {
-        start(touch);
+        let context = Object.create(null);
+        contexts.set(touch.identifier, context); 
+        start(touch, context);
     }
 });
 
 el.addEventListener('touchmove', event => {
     for (let touch of event.changedTouches) {
-        move(touch);
+        let context = contexts.get(touch.identifier);
+        move(touch, context);
     }
 });
 
 el.addEventListener('touchend', event => {
     for (let touch of event.changedTouches) {
-        end(touch);
+        let context = contexts.get(touch.identifier);
+        end(touch, context);
+        contexts.delete(touch.identifier);
     }
 });
 
 el.addEventListener('touchcancel', event => {
     for (let touch of event.changedTouches) {
-        cancel(touch);
+        let context = contexts.get(touch.identifier);
+        cancel(touch, context);
+        contexts.delete(touch.identifier);
     }
 });
 
