@@ -1,11 +1,16 @@
 export class Listener {
     constructor(el, recognizer) {
-        let contexts = new Map();
-        let isListeningMouse = false;
+        this.el = el;
+        this.recognizer = recognizer;
+        this.contexts = new Map();
+        this.isListeningMouse = false;
 
-        // mouse
+        this.mouseEvents();
+        this.touchEvents();
+    }
 
-        el.addEventListener('mousedown', event => {
+    mouseEvents() {
+        this.el.addEventListener('mousedown', event => {
             // console.log(event.button, event.buttons);
             
             let context = Object.create(null);
@@ -15,8 +20,8 @@ export class Listener {
             // rigth: 0b00100 (not 0b00010 in event.buttons) 
             // middle: 0b00010 (not 0b00100 in event.buttons)
             
-            contexts.set('mouse' + button, context);
-            recognizer.start(event, context);
+            this.contexts.set('mouse' + button, context);
+            this.recognizer.start(event, context);
 
             const mouseMove = event => {
                 let key = 1; // key in event.buttons
@@ -30,8 +35,8 @@ export class Listener {
                         if (key === 4) { // 0b00100
                             button = 2;
                         }
-                        let context = contexts.get('mouse'+button);
-                        recognizer.move(event, context);
+                        let context = this.contexts.get('mouse'+button);
+                        this.recognizer.move(event, context);
                     }
                     key = key << 1;
                 }
@@ -39,55 +44,55 @@ export class Listener {
 
             const mouseUp = event => {
                 const button = 1 << event.button;
-                let context = contexts.get('mouse' + button);
+                let context = this.contexts.get('mouse' + button);
 
-                recognizer.end(event, context);
-                contexts.delete('mouse' + button);
+                this.recognizer.end(event, context);
+                this.contexts.delete('mouse' + button);
 
                 if (event.buttons === 0) { // no button on the mouse is pressed
                     document.removeEventListener('mousemove', mouseMove);
                     document.removeEventListener('mouseup', mouseUp);
-                    isListeningMouse = false;
+                    this.isListeningMouse = false;
                 }
             }
 
-            if (!isListeningMouse) {
+            if (!this.isListeningMouse) {
                 document.addEventListener('mousemove', mouseMove);
                 document.addEventListener('mouseup', mouseUp);
-                isListeningMouse = true;
+                this.isListeningMouse = true;
             }
         });
+    }
 
-        // touch
-
-        el.addEventListener('touchstart', event => {
+    touchEvents() {
+        this.el.addEventListener('touchstart', event => {
             for (let touch of event.changedTouches) {
                 let context = Object.create(null);
-                contexts.set(touch.identifier, context); 
-                recognizer.start(touch, context);
+                this.contexts.set(touch.identifier, context); 
+                this.recognizer.start(touch, context);
             }
         });
 
-        el.addEventListener('touchmove', event => {
+        this.el.addEventListener('touchmove', event => {
             for (let touch of event.changedTouches) {
-                let context = contexts.get(touch.identifier);
-                recognizer.move(touch, context);
+                let context = this.contexts.get(touch.identifier);
+                this.recognizer.move(touch, context);
             }
         });
 
-        el.addEventListener('touchend', event => {
+        this.el.addEventListener('touchend', event => {
             for (let touch of event.changedTouches) {
-                let context = contexts.get(touch.identifier);
-                recognizer.end(touch, context);
-                contexts.delete(touch.identifier);
+                let context = this.contexts.get(touch.identifier);
+                this.recognizer.end(touch, context);
+                this.contexts.delete(touch.identifier);
             }
         });
 
-        el.addEventListener('touchcancel', event => {
+        this.el.addEventListener('touchcancel', event => {
             for (let touch of event.changedTouches) {
-                let context = contexts.get(touch.identifier);
-                recognizer.cancel(touch, context);
-                contexts.delete(touch.identifier);
+                let context = this.contexts.get(touch.identifier);
+                this.recognizer.cancel(touch, context);
+                this.contexts.delete(touch.identifier);
             }
         });
     }
