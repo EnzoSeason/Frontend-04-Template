@@ -46,74 +46,74 @@ el.addEventListener('touchcancel', event => {
 
 // function
 
-// start point
-let startX, startY;
-// state: tap, pan, press
-let isTap = false;
-let isPan = false;
-let isPress = false;
-// press handler: 0.5s tap => press
-let pressHandler;
+// // start point
+// let startX, startY;
+// // state: tap, pan, press
+// let isTap = false;
+// let isPan = false;
+// let isPress = false;
+// // press handler: 0.5s tap => press
+// let pressHandler;
 
-const start = point => {
-    startX = point.clientX, startY = point.clientY;
+const start = (point, context) => {
+    context.startX = point.clientX, context.startY = point.clientY;
     // tap start
-    isTap = true;
-    isPan = false;
-    isPress = false;
+    context.isTap = true;
+    context.isPan = false;
+    context.isPress = false;
     console.log('tap start');
     
-    pressHandler = setTimeout(() => {
+    context.pressHandler = setTimeout(() => {
         // press start
-        isTap = false;
-        isPan = false;
-        isPress = true;
-        pressHandler = null;
+        context.isTap = false;
+        context.isPan = false;
+        context.isPress = true;
+        context.pressHandler = null;
         console.log('press start');
     }, 500);
 }
 
-const move = point => {
-    let dx = point.clientX - startX;
-    let dy = point.clientY - startY;
+const move = (point, context) => {
+    let dx = point.clientX - context.startX;
+    let dy = point.clientY - context.startY;
 
-    if (!isPan && dx ** 2 + dy ** 2 > 100) {
+    if (!context.isPan && dx ** 2 + dy ** 2 > 100) {
         // pan start
-        isTap = false;
-        isPan = true;
-        isPress = false;
-        clearTimeout(pressHandler);
+        context.isTap = false;
+        context.isPan = true;
+        context.isPress = false;
+        clearTimeout(context.pressHandler);
         console.log('pan start');
     }
 
-    if (isPan) {
+    if (context.isPan) {
         // pan move
-        isTap = false;
-        isPan = true;
-        isPress = false;
+        context.isTap = false;
+        context.isPan = true;
+        context.isPress = false;
         console.log('pan move');
     }
 }
 
-const end = point => {
-    if (isTap) {
+const end = (point, context) => {
+    if (context.isTap) {
         // tap end
         console.log('tap end');
-        clearTimeout(pressHandler);
+        clearTimeout(context.pressHandler);
     }
 
-    if (isPress) {
+    if (context.isPress) {
         // press end
         console.log('press end');
     }
 
-    if (isPan) {
+    if (context.isPan) {
         // pan end
         console.log('pan end')
     }
 }
 
-const cancel = point => {
-    clearTimeout(pressHandler);
+const cancel = (point, context) => {
+    clearTimeout(context.pressHandler);
     console.log('cancel');
 }
