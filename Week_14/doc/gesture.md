@@ -123,3 +123,15 @@ const button = 1 << event.button;
 
 contexts.set('mouse' + button, context);
 ```
+
+## 派发事件
+
+```javascript
+function dispatch(type, props) {
+    let event = new Event(type);
+    for (let name in props) {
+        event[name] = props[name];
+    }
+    element.dispatchEvent(event);
+}
+```

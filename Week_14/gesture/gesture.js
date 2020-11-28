@@ -45,15 +45,15 @@ el.addEventListener('mousedown', event => {
         contexts.delete('mouse' + button);
 
         if (event.buttons === 0) { // no button on the mouse is pressed
-            el.removeEventListener('mousemove', mouseMove);
-            el.removeEventListener('mouseup', mouseUp);
+            document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('mouseup', mouseUp);
             isListeningMouse = false;
         }
     }
 
     if (!isListeningMouse) {
-        el.addEventListener('mousemove', mouseMove);
-        el.addEventListener('mouseup', mouseUp);
+        document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mouseup', mouseUp);
         isListeningMouse = true;
     }
 });
@@ -164,4 +164,12 @@ const end = (point, context) => {
 const cancel = (point, context) => {
     clearTimeout(context.pressHandler);
     console.log('cancel', point);
+}
+
+function dispatch(type, props) {
+    let event = new Event(type);
+    for (let name in props) {
+        event[name] = props[name];
+    }
+    element.dispatchEvent(event);
 }
