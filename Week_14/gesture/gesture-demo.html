@@ -1,4 +1,6 @@
-<body oncontextmenu="event.preventDefault()"></body>
+<body oncontextmenu="event.preventDefault()">
+    <div id="el" style="height: 100px; width: 100px; background-color: aqua;"></div>
+</body>
 <script type="module">
     import {Dispatcher, Recognizer, Listener} from './gesture-package.js';
     const element = document.documentElement;
@@ -12,7 +14,11 @@
     document.documentElement.addEventListener('panmove', () => {console.log('pan move')});
     document.documentElement.addEventListener('tapend', () => {console.log('tap end')});
     document.documentElement.addEventListener('pressend', () => {console.log('press end')});
-    document.documentElement.addEventListener('panend', () => {console.log('pan end')});
+    document.documentElement.addEventListener('panend', () => {
+        console.log('pan end');
+        const color = document.querySelector('#el').style['background-color'];
+        document.querySelector('#el').style['background-color'] = color === 'red' ? 'aqua' : 'red';
+    });
     document.documentElement.addEventListener('flick', () => {console.log('flick')});
     document.documentElement.addEventListener('cancel', () => {console.log('cancel')});
 </script>
