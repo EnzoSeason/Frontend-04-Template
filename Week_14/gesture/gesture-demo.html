@@ -1,0 +1,18 @@
+<body oncontextmenu="event.preventDefault()"></body>
+<script type="module">
+    import {Dispatcher, Recognizer, Listener} from './gesture-package.js';
+    const element = document.documentElement;
+    const dispatcher = new Dispatcher(element);
+    const recognizer = new Recognizer(dispatcher);
+    const listener = new Listener(element,recognizer);
+
+    document.documentElement.addEventListener('tapstart', () => {console.log('tap start')});
+    document.documentElement.addEventListener('pressstart', () => {console.log('press start')});
+    document.documentElement.addEventListener('panstart', () => {console.log('pan start')});
+    document.documentElement.addEventListener('panmove', () => {console.log('pan move')});
+    document.documentElement.addEventListener('tapend', () => {console.log('tap end')});
+    document.documentElement.addEventListener('pressend', () => {console.log('press end')});
+    document.documentElement.addEventListener('panend', () => {console.log('pan end')});
+    document.documentElement.addEventListener('flick', () => {console.log('flick')});
+    document.documentElement.addEventListener('cancel', () => {console.log('cancel')});
+</script>

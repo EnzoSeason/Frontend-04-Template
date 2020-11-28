@@ -1,14 +1,14 @@
 # 手势
 
-## 基本状态
+## 基本
 
 ![gesture](../img/gesture.png)
 
 重点：
 
-1. **三种动作**：tap, pan, press， 初始**状态**为 `tap start`。 **状态变化**时要**更新动作**。
+1. **四种手势**：tap, pan, press，flick, 初始**状态**为 `tap start`。
 
-2. 进入 press 的条件：tap 超过 0.5s
+2. 进入 press start 的条件：tap 超过 0.5s
 
     实现: 
     * `tap start`: `pressHandler = setTimeout(() =>{ // press start }, 500)`
@@ -17,7 +17,7 @@
     
     * `press start`: `pressHandler = null`
 
-3. flick
+3. 进入 flick
 
     判断：松开前**0.5s**内的**速度 (v)**，如果 **v > 1.5ms**, 就进入 flick 状态
 
@@ -139,3 +139,15 @@ function dispatch(type, props) {
     element.dispatchEvent(event);
 }
 ```
+
+## 封装
+
+将 gesture.js 中的代码，分成**3**个类
+
+* Listener：监听 touch, mouse 事件
+
+* Recognizer: 判断不同状态，实现手势
+
+* Dipatcher: 派发自建的手势
+
+Listener => Recognizer => Dipatcher

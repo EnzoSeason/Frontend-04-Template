@@ -118,7 +118,7 @@ const start = (point, context) => {
             y: point.clientY
         }
     ];
-    console.log('tap start', point);
+    console.log('tap start');
     
     context.pressHandler = setTimeout(() => {
         // press start
@@ -126,7 +126,7 @@ const start = (point, context) => {
         context.isPan = false;
         context.isPress = true;
         context.pressHandler = null;
-        console.log('press start', point);
+        console.log('press start');
     }, 500);
 }
 
@@ -149,7 +149,7 @@ const move = (point, context) => {
         context.isPan = true;
         context.isPress = false;
         clearTimeout(context.pressHandler);
-        console.log('pan start', point);
+        console.log('pan start');
     }
 
     if (context.isPan) {
@@ -157,7 +157,7 @@ const move = (point, context) => {
         context.isTap = false;
         context.isPan = true;
         context.isPress = false;
-        console.log('pan move', point);
+        console.log('pan move');
     }
 }
 
@@ -173,7 +173,7 @@ const end = (point, context) => {
         v = d / (Date.now() - startPoint.t);
     }
     if (v > 1.5) {
-        console.log('flick', point);
+        console.log('flick');
         context.isFlick = true;
     } else {
         context.isFlick = false;
@@ -181,24 +181,24 @@ const end = (point, context) => {
     
     if (context.isTap) {
         // tap end
-        console.log('tap end', point);
+        console.log('tap end');
         clearTimeout(context.pressHandler);
     }
 
     if (context.isPress) {
         // press end
-        console.log('press end', point);
+        console.log('press end');
     }
 
     if (context.isPan) {
         // pan end
-        console.log('pan end', point);
+        console.log('pan end');
     }
 }
 
 const cancel = (point, context) => {
     clearTimeout(context.pressHandler);
-    console.log('cancel', point);
+    console.log('cancel');
 }
 
 function dispatch(type, props) {
