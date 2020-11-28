@@ -17,6 +17,10 @@
     
     * `press start`: `pressHandler = null`
 
+3. flick
+
+    判断：松开前**0.5s**内的**速度 (v)**，如果 **v > 1.5ms**, 就进入 flick 状态
+
 
 
 ## 鼠标和触控

@@ -109,6 +109,15 @@ const start = (point, context) => {
     context.isTap = true;
     context.isPan = false;
     context.isPress = false;
+    context.isFlick = false;
+    // set start point
+    context.points = [
+        {
+            t: Date.now(),
+            x: point.clientX,
+            y: point.clientY
+        }
+    ];
     console.log('tap start', point);
     
     context.pressHandler = setTimeout(() => {
@@ -122,6 +131,15 @@ const start = (point, context) => {
 }
 
 const move = (point, context) => {
+    // remove old points, add current point
+    context.points = context.points.filter(point => Date.now() - point.t < 500);
+    context.points.push(
+        {
+            t: Date.now(),
+            x: point.clientX,
+            y: point.clientY
+        }
+    )
     let dx = point.clientX - context.startX;
     let dy = point.clientY - context.startY;
 
@@ -144,6 +162,23 @@ const move = (point, context) => {
 }
 
 const end = (point, context) => {
+    context.points = context.points.filter(point => Date.now() -  point.t < 500);
+    let v = 0;
+    if (context.points.length) {
+        const startPoint = context.points[0];
+        const d = Math.sqrt(
+            (point.clientX - startPoint.x) ** 2 + 
+            (point.clientY - startPoint.y) ** 2
+        );
+        v = d / (Date.now() - startPoint.t);
+    }
+    if (v > 1.5) {
+        console.log('flick', point);
+        context.isFlick = true;
+    } else {
+        context.isFlick = false;
+    }
+    
     if (context.isTap) {
         // tap end
         console.log('tap end', point);
