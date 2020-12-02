@@ -16,9 +16,9 @@
 
 * animationDuration： 动画时长
 
-* animationTime：动画发生的时间点
+* animationDX, animationTime:
 
-* animationDX：暂停动画期间，轮播自动移动图片的距离（误差）
+    当图片在滚动时，如果
 
 ### Methods
 
