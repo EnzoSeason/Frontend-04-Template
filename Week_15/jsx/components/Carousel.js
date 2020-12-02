@@ -85,15 +85,23 @@ class Carousel extends Component {
             let current = children[this.currentIdx];
             let next = children[nextIdx];
             // prepare for the position of next img
-            next.style.transition = 'none';
-            next.style.transform = `translateX(${vw - nextIdx * vw}px)`; // move to the right of current img
+            // next.style.transition = 'none';
+            // next.style.transform = `translateX(${vw - nextIdx * vw}px)`; // move to the right of current img
             // move to next img
-            setTimeout(()=>{
-                next.style.transition = '';
-                current.style.transform = `translateX(${- vw - this.currentIdx * vw}px)`;
-                next.style.transform = `translateX(${- nextIdx * vw}px)`;
-                this.currentIdx = nextIdx;
-            }, 16); // 16ms is the time for a frame in browser
+            let currentAnimation = new Animation(
+                current.style, 'transform',
+                - this.currentIdx * vw, - vw - this.currentIdx * vw,
+                500, 0, ease, v => `translateX(${v}px)`
+            );
+            let nextAnimation = new Animation(
+                next.style, 'transform',
+                vw - nextIdx * vw, - nextIdx * vw,
+                500, 0, ease, v => `translateX(${v}px)`
+            );
+            this.timeline.add(currentAnimation);
+            this.timeline.add(nextAnimation);
+            this.currentIdx = nextIdx;
+
         }, 1000);
     }
 
