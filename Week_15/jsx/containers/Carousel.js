@@ -8,7 +8,7 @@ class Carousel extends Component {
         this.currentIdx = 0;
         this.timeline = new Timeline();
         this.intervalDuration = 3000;
-        this.animationDuration = 1500;
+        this.animationDuration = 500;
         this.animationTime = 0;
         this.animationDX = 0;
         this.animationHandler = null;
