@@ -2,6 +2,8 @@
 
 ## Carousel
 
+[code](./jsx/components/Carousel.js)
+
 ### Attributes
 
 * currentIdx：当前显示的图片索引
