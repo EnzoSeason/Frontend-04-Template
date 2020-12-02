@@ -8,7 +8,11 @@ class Carousel extends Component {
         this.attributes = {};
         this.currentIdx = 0;
         this.timeline = new Timeline();
-        this.frameTime = 1500;
+        this.intervalDuration = 3000;
+        this.animationDuration = 500;
+        this.animationTime = 0;
+        this.animationDX = 0;
+        this.animationHandler = null;
     }
     setAttribute(name, value) {
         this.attributes[name] = value;
@@ -29,8 +33,8 @@ class Carousel extends Component {
         // enable gestures
         enableGesture(this.root);
         this.enableTapStart();
-        this.enableTapEnd();
-        this.enablePressEnd();
+        // this.enableTapEnd();
+        // this.enablePressEnd();
         this.enablePanMove();
         this.enablePanEnd();
 
@@ -42,6 +46,11 @@ class Carousel extends Component {
     enableTapStart() {
         this.root.addEventListener('tapstart', event => {
             this.timeline.pause();
+            clearInterval(this.animationHandler);
+
+            let vw = this.root.getBoundingClientRect()['width'];
+            let progress = (Date.now() - this.animationTime) / this.animationDuration;
+            this.animationDX = ease(progress) * vw - vw ; 
         });
     }
 
@@ -62,7 +71,7 @@ class Carousel extends Component {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
 
-            let x = event.clientX - event.startX;
+            let x = event.clientX - event.startX - this.animationDX;
             let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
                 
             // move images, the tail is connected to the head
@@ -81,49 +90,62 @@ class Carousel extends Component {
         this.root.addEventListener('panend', event => {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
+            // restart timeline
+            this.timeline.reset();
+            this.timeline.start();
+            this.autoPlay();
+
+            let x = event.clientX - event.startX - this.animationDX;
+            let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
+            let direction = Math.round((x % vw) / vw);
             
-            let x = event.clientX - event.startX;
-            let currentIdx = this.currentIdx - Math.round(x / vw); // to the nearest whole number
-            
-            const next = Math.sign(x - vw / 2 * Math.sign(x));
-            for (let offset of [0, next]) { 
+            for (let offset of [-1, 0, 1]) { 
                 let nextIdx = currentIdx + offset;
-                nextIdx = (nextIdx + children.length) % children.length;
+                nextIdx = (nextIdx % children.length + children.length) % children.length;
                 
-                children[nextIdx].style.transition = '';
-                children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw}px)`;
+                // children[nextIdx].style.transition = 'none';
+                // children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw + x % vw}px)`;
+
+                let animation = new Animation(
+                    children[nextIdx].style, 'transform',
+                    - (nextIdx - offset) * vw + x % vw,  
+                    - (nextIdx - offset) * vw + direction * vw ,
+                    this.animationDuration, 0, ease, v => `translateX(${v}px)`
+                );
+                this.timeline.add(animation);
             }
 
-            this.currentIdx = (currentIdx + children.length) % children.length;
-            
-            this.timeline.resume();
+            this.currentIdx = this.currentIdx - (x - (x % vw) )/ vw - direction;
+            this.currentIdx = (this.currentIdx % children.length + children.length) % children.length;
         });
     }
 
     autoPlay() {
-        setInterval(() => {
+        this.animationHandler = setInterval(() => {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
             // get current img and next img
             let nextIdx = (this.currentIdx + 1) % children.length;
             let current = children[this.currentIdx];
             let next = children[nextIdx];
-
+    
             let currentAnimation = new Animation(
                 current.style, 'transform',
                 - this.currentIdx * vw, - vw - this.currentIdx * vw,
-                this.frameTime, 0, ease, v => `translateX(${v}px)`
+                this.animationDuration, 0, ease, v => `translateX(${v}px)`
             );
             let nextAnimation = new Animation(
                 next.style, 'transform',
                 vw - nextIdx * vw, - nextIdx * vw,
-                this.frameTime, 0, ease, v => `translateX(${v}px)`
+                this.animationDuration, 0, ease, v => `translateX(${v}px)`
             );
+    
+            this.animationTime = Date.now();
             this.timeline.add(currentAnimation);
             this.timeline.add(nextAnimation);
             
             this.currentIdx = nextIdx;
-        }, 1000);
+        }, this.intervalDuration);
     }
 
 }
