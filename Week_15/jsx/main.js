@@ -8,6 +8,8 @@ const images = [
     "./asset/img/4.jpg",
     "./asset/img/5.jpg",
 ]
-const a = <Carousel  src={images} />;
+const a = <Carousel  
+    src={images} 
+    onChange={event => console.log(event.detail)}/>;
 
 a.mountTo(document.body);

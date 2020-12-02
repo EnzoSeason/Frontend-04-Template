@@ -42,8 +42,9 @@ export class Component {
         // use proxy: mountTo
         child.mountTo(this.root);
     }
-    render() {
-        this.root = document.createElement('div');
+    triggerEvent(type, arg) {
+        const key = 'on' + type.replace(/^[\s\S]/, s => s.toUpperCase());
+        this[ATTRIBUTES][key](new CustomEvent(type, {detail: arg})); 
     }
 }
 class TextNodeWrapper extends Component{

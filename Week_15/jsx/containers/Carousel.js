@@ -107,6 +107,7 @@ class Carousel extends Component {
 
             this[STATE].currentIdx = this[STATE].currentIdx - (x - (x % vw))/ vw - direction;
             this[STATE].currentIdx = (this[STATE].currentIdx % children.length + children.length) % children.length;
+            this.triggerEvent('change', {currentIdx: this[STATE].currentIdx});
         });
     }
 
@@ -136,6 +137,7 @@ class Carousel extends Component {
             this[TIMELINE].add(nextAnimation);
             
             this[STATE].currentIdx = nextIdx;
+            this.triggerEvent('change', {currentIdx: this[STATE].currentIdx});
         }, this[STATE].intervalDuration);
     }
 
