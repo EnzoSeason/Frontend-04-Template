@@ -20,12 +20,16 @@ export function createElement(type, attributes, ...children) {
     return element;
 }
 
+export const STATE = Symbol('state');
+export const ATTRIBUTES = Symbol('attributes');
+
 export class Component {
     constructor() {
-        this.attributes = Object.create(null);
+        this[ATTRIBUTES] = Object.create(null);
+        this[STATE] = Object.create(null);
     }
     setAttribute(name, value) {
-        this.attributes[name] = value;
+        this[ATTRIBUTES][name] = value;
     }
     mountTo(parent) {
         // proxy of DOM API: appendChild
