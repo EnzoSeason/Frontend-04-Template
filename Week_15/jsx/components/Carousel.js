@@ -8,7 +8,7 @@ class Carousel extends Component {
         this.attributes = {};
         this.currentIdx = 0;
         this.timeline = new Timeline();
-        this.intervalDuration = 3000;
+        this.intervalDuration = 1500;
         this.animationDuration = 500;
         this.animationTime = 0;
         this.animationDX = 0;
@@ -33,10 +33,8 @@ class Carousel extends Component {
         // enable gestures
         enableGesture(this.root);
         this.enableTapStart();
-        // this.enableTapEnd();
-        // this.enablePressEnd();
         this.enablePanMove();
-        this.enablePanEnd();
+        this.enableAllEnd();
 
         // enable autoplay
         this.timeline.start();
@@ -51,18 +49,6 @@ class Carousel extends Component {
             let vw = this.root.getBoundingClientRect()['width'];
             let progress = (Date.now() - this.animationTime) / this.animationDuration;
             this.animationDX = ease(progress) * vw - vw ; 
-        });
-    }
-
-    enableTapEnd() {
-        this.root.addEventListener('tapend', event => {
-            this.timeline.resume();
-        });
-    }
-
-    enablePressEnd() {
-        this.root.addEventListener('pressend', event => {
-            this.timeline.resume();
         });
     }
 
@@ -86,8 +72,8 @@ class Carousel extends Component {
         });
     }
 
-    enablePanEnd() {
-        this.root.addEventListener('panend', event => {
+    enableAllEnd() {
+        this.root.addEventListener('allend', event => {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
             // restart timeline

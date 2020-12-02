@@ -236,6 +236,15 @@ export class Recognizer {
                 isFlick: context.isFlick
             }); 
         }
+
+        this.dispatcher.dispatch('allend', {
+            startX: context.startX,
+            startY: context.startY,
+            clientX: point.clientX,
+            clientY: point.clientY, 
+            isVertical: context.isVertical,
+            isFlick: context.isFlick
+        }); 
     }
 
     cancel(point, context){
