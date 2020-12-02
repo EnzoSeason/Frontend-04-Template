@@ -7,8 +7,8 @@ class Carousel extends Component {
         super();
         this.currentIdx = 0;
         this.timeline = new Timeline();
-        this.intervalDuration = 1500;
-        this.animationDuration = 500;
+        this.intervalDuration = 3000;
+        this.animationDuration = 1500;
         this.animationTime = 0;
         this.animationDX = 0;
         this.animationHandler = null;
@@ -41,7 +41,11 @@ class Carousel extends Component {
 
             let vw = this.root.getBoundingClientRect()['width'];
             let progress = (Date.now() - this.animationTime) / this.animationDuration;
-            this.animationDX = ease(progress) * vw - vw ; 
+            if (Date.now() - this.animationTime < this.animationDuration) {
+                this.animationDX = ease(progress) * vw - vw ; 
+            } else {
+                this.animationDX = 0;
+            }
         });
     }
 
