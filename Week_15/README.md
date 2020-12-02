@@ -18,7 +18,15 @@
 
 * animationDX, animationTime:
 
-    当图片在滚动时，如果
+    当图片在滚动时，用户**按下（tap）**，此刻，动画造成的 `tranform` 已经作用在 CSS 上。因此，需要计算动画造成的位移来弥补这个误差。
+
+    ```javascript
+    if (Date.now() - this.animationTime < this.animationDuration) { // while the image is moving
+        this.animationDX = ease(progress) * vw - vw ; 
+    } else {
+        this.animationDX = 0;
+    }
+    ```
 
 ### Methods
 

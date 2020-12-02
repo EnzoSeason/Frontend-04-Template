@@ -41,9 +41,11 @@ class Carousel extends Component {
 
             let vw = this.root.getBoundingClientRect()['width'];
             let progress = (Date.now() - this.animationTime) / this.animationDuration;
-            if (Date.now() - this.animationTime < this.animationDuration) {
+            if (Date.now() - this.animationTime < this.animationDuration) { 
+                // while the image is moving, animation causes dx.
                 this.animationDX = ease(progress) * vw - vw ; 
             } else {
+                // while the image is still, no dx.
                 this.animationDX = 0;
             }
         });
