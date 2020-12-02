@@ -259,7 +259,7 @@ export class Dispatcher {
         this.element = element;
     }
     dispatch(type, props) {
-        let event = new Event(type);
+        let event = new CustomEvent(type);
         for (let name in props) {
             event[name] = props[name];
         }
