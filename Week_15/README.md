@@ -2,7 +2,7 @@
 
 ## Carousel
 
-[code](./jsx/components/Carousel.js)
+[code](./jsx/containers/Carousel.js)
 
 ### Attributes
 

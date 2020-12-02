@@ -1,5 +1,5 @@
 import { createElement } from './tools/framework.js';
-import Carousel from './components/Carousel';
+import Carousel from './containers/Carousel';
 
 const images = [
     "./asset/img/1.jpg",
