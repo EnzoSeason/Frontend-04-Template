@@ -2,16 +2,22 @@ import { Component } from '../tools/framework';
 import { enableGesture } from '../tools/gesture-package';
 import { Timeline, Animation } from '../tools/animation';
 import { ease } from '../tools/cubic-bezier';
+
+const TIMELINE = Symbol('timeline');
+const ANIMATION_T = Symbol('animation-time');
+const ANIMATION_DX = Symbol('animation-dx');
+const AUTOPLAY_HANDLER = Symbol('autoplay-handler');
+
 class Carousel extends Component {
     constructor() {
         super();
         this.currentIdx = 0;
-        this.timeline = new Timeline();
+        this[TIMELINE] = new Timeline();
         this.intervalDuration = 3000;
         this.animationDuration = 500;
-        this.animationTime = 0;
-        this.animationDX = 0;
-        this.animationHandler = null;
+        this[ANIMATION_T] = 0;
+        this[ANIMATION_DX] = 0;
+        this[AUTOPLAY_HANDLER] = null;
     }
     
     render() {
@@ -30,23 +36,23 @@ class Carousel extends Component {
         this.enableAllEnd();
 
         // enable autoplay
-        this.timeline.start();
+        this[TIMELINE].start();
         this.autoPlay();
     }
 
     enableTapStart() {
         this.root.addEventListener('tapstart', event => {
-            this.timeline.pause();
-            clearInterval(this.animationHandler);
+            this[TIMELINE].pause();
+            clearInterval(this[AUTOPLAY_HANDLER]);
 
             let vw = this.root.getBoundingClientRect()['width'];
-            let progress = (Date.now() - this.animationTime) / this.animationDuration;
-            if (Date.now() - this.animationTime < this.animationDuration) { 
+            let progress = (Date.now() - this[ANIMATION_T]) / this.animationDuration;
+            if (Date.now() - this[ANIMATION_T] < this.animationDuration) { 
                 // while the image is moving, animation causes dx.
-                this.animationDX = ease(progress) * vw - vw ; 
+                this[ANIMATION_DX] = ease(progress) * vw - vw ; 
             } else {
                 // while the image is still, no dx.
-                this.animationDX = 0;
+                this[ANIMATION_DX] = 0;
             }
         });
     }
@@ -56,7 +62,7 @@ class Carousel extends Component {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
 
-            let x = event.clientX - event.startX - this.animationDX;
+            let x = event.clientX - event.startX - this[ANIMATION_DX];
             let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
                 
             // move images, the tail is connected to the head
@@ -76,11 +82,11 @@ class Carousel extends Component {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
             // restart timeline
-            this.timeline.reset();
-            this.timeline.start();
+            this[TIMELINE].reset();
+            this[TIMELINE].start();
             this.autoPlay();
 
-            let x = event.clientX - event.startX - this.animationDX;
+            let x = event.clientX - event.startX - this[ANIMATION_DX];
             let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
             let direction = Math.round((x % vw) / vw);
             
@@ -94,7 +100,7 @@ class Carousel extends Component {
                     - (nextIdx - offset) * vw + direction * vw ,
                     this.animationDuration, 0, ease, v => `translateX(${v}px)`
                 );
-                this.timeline.add(animation);
+                this[TIMELINE].add(animation);
             }
 
             this.currentIdx = this.currentIdx - (x - (x % vw))/ vw - direction;
@@ -103,7 +109,7 @@ class Carousel extends Component {
     }
 
     autoPlay() {
-        this.animationHandler = setInterval(() => {
+        this[AUTOPLAY_HANDLER] = setInterval(() => {
             let children = this.root.children;
             let vw = this.root.getBoundingClientRect()['width'];
             // get current img and next img
@@ -123,9 +129,9 @@ class Carousel extends Component {
                 this.animationDuration, 0, ease, v => `translateX(${v}px)`
             );
     
-            this.animationTime = Date.now();
-            this.timeline.add(currentAnimation);
-            this.timeline.add(nextAnimation);
+            this[ANIMATION_T] = Date.now();
+            this[TIMELINE].add(currentAnimation);
+            this[TIMELINE].add(nextAnimation);
             
             this.currentIdx = nextIdx;
         }, this.intervalDuration);

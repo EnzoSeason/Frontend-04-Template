@@ -10,7 +10,7 @@
 
 * timeline：控制动画的时间线
 
-* animationHandler：轮播控制器 (setInterval / clearInterval)
+* autoplayHandler：轮播控制器 (setInterval / clearInterval)
 
 * intervalDuration: 轮播间隔
 
@@ -36,14 +36,14 @@
     
     2. 启动手势：tap start, pan move, all end (tap, press, pan end)
 
-    3. 启动时间线（timeline），设置轮播控制器（animationHandler）
+    3. 启动时间线（timeline），设置轮播控制器（autoplayHandler）
 
 * enableTapStart
 
     当用户按下（tap）时：
 
     1. 暂停： timeline
-    2. 删除： animationHandler
+    2. 删除： autoplayHandler
     3. 计算： 轮播自动移动图片的距离（误差）
 
 * enablePanMove
@@ -56,14 +56,14 @@
 * enableAllEnd
 
     1. 重置：新的 timeline (reset & start)
-    2. 创建：新的 animationHandler
+    2. 创建：新的 autoplayHandler
     3. 计算：下一张图片的相对位置，在当前图片的左边（-1），还是右边（+1）
     4. 更新：根据相对位置，给**当前**显示的图片，**及其两侧(2张 或 4张)** 图片设置移动的动画， 并添加到时间线
     5. 更新：当前显示的图片索引（currentIdx）
 
 * autoPlay
 
-    设置轮播控制器（animationHandler）
+    设置轮播控制器（autoplayHandler）
 
     1. 设置： 循环播放（setInterval 或 嵌套的 setTimeout）
     2. 设置： 给**当前（currentIdx）** 图片及其**右侧相邻（nextIdx）** 设置移动的动画，并添加到时间线
