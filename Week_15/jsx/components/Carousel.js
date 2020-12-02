@@ -5,7 +5,6 @@ import { ease } from '../tools/cubic-bezier';
 class Carousel extends Component {
     constructor() {
         super();
-        this.attributes = {};
         this.currentIdx = 0;
         this.timeline = new Timeline();
         this.intervalDuration = 1500;
@@ -14,15 +13,8 @@ class Carousel extends Component {
         this.animationDX = 0;
         this.animationHandler = null;
     }
-    setAttribute(name, value) {
-        this.attributes[name] = value;
-    }
-    mountTo(parent) {
-        this.root = document.createElement('div');
-        this.render();
-        parent.appendChild(this.root);
-    }
     render() {
+        this.root = document.createElement('div');
         this.root.classList.add('carousel'); 
         // add images
         for(let imgUrl of this.attributes['src']) {

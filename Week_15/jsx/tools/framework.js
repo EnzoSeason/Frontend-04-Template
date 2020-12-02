@@ -21,17 +21,25 @@ export function createElement(type, attributes, ...children) {
 }
 
 export class Component {
+    constructor() {
+        this.attributes = Object.create(null);
+    }
+    setAttribute(name, value) {
+        this.attributes[name] = value;
+    }
     mountTo(parent) {
         // proxy of DOM API: appendChild
+        if (!this.root) {
+            this.render();
+        }
         parent.appendChild(this.root);
     }
     appendChild(child) {
         // use proxy: mountTo
         child.mountTo(this.root);
     }
-    setAttribute(name, value) {
-        // DOM API
-        this.root.setAttribute(name, value);
+    render() {
+        this.root = document.createElement('div');
     }
 }
 class TextNodeWrapper extends Component{
