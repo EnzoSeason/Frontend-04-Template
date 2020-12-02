@@ -25,56 +25,50 @@ class Carousel extends Component {
             this.root.appendChild(child);
         }
         enableGesture(this.root);
-        this.root.addEventListener('panmove', () => {console.log('pan move')});
-        // this.autoPlay();
-        // this.mouseControl();
+
+        // enable gestures
+        this.enablePanMove();
+        this.enablePanEnd();
     }
 
-    mouseControl() {
-        this.root.addEventListener('mousedown', event => {
+    enablePanMove() {
+        this.root.addEventListener('panmove', event => {
             let children = this.root.children;
-            // start coordinate within the application's viewport 
-            // at which the event occurred 
-            let startX = event.clientX;
+            let vw = this.root.getBoundingClientRect()['width'];
 
-            let move = event => {
-                let vw = this.root.getBoundingClientRect()['width'];
-                let x = event.clientX - startX;
-                let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
+            let x = event.clientX - event.startX;
+            let currentIdx = this.currentIdx - (x - (x % vw) )/ vw; // round down
                 
-                // move images, the tail is connected to the head
-                // only move the images next to the current one
-                for (let offset of [-1, 0, 1]) { 
-                    let nextIdx = currentIdx + offset;
-                    nextIdx = (nextIdx + children.length) % children.length;
-                    
-                    children[nextIdx].style.transition = 'none';
-                    children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw + x % vw}px)`;
-                }
-            };
+            // move images, the tail is connected to the head
+            // only move the images next to the current one
+            for (let offset of [-1, 0, 1]) { 
+                let nextIdx = currentIdx + offset;
+                nextIdx = (nextIdx % children.length + children.length) % children.length;
+                
+                children[nextIdx].style.transition = 'none';
+                children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw + x % vw}px)`;
+            }
+        });
+    }
 
-            let up = event => {
-                let vw = this.root.getBoundingClientRect()['width'];
-                let x = event.clientX - startX;
-                let currentIdx = this.currentIdx - Math.round(x / vw); // to the nearest whole number
+    enablePanEnd() {
+        this.root.addEventListener('panend', event => {
+            let children = this.root.children;
+            let vw = this.root.getBoundingClientRect()['width'];
+            
+            let x = event.clientX - event.startX;
+            let currentIdx = this.currentIdx - Math.round(x / vw); // to the nearest whole number
+            
+            const next = Math.sign(x - vw / 2 * Math.sign(x));
+            for (let offset of [0, next]) { 
+                let nextIdx = currentIdx + offset;
+                nextIdx = (nextIdx + children.length) % children.length;
                 
-                const next = Math.sign(x - vw / 2 * Math.sign(x));
-                for (let offset of [0, next]) { 
-                    let nextIdx = currentIdx + offset;
-                    nextIdx = (nextIdx + children.length) % children.length;
-                    
-                    children[nextIdx].style.transition = '';
-                    children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw}px)`;
-                }
-
-                this.currentIdx = (currentIdx + children.length) % children.length;
-                
-                document.removeEventListener('mousemove', move);
-                document.removeEventListener('mouseup', up);
+                children[nextIdx].style.transition = '';
+                children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw}px)`;
             }
 
-            document.addEventListener('mousemove', move);
-            document.addEventListener('mouseup', up);
+            this.currentIdx = (currentIdx + children.length) % children.length;
         });
     }
 
