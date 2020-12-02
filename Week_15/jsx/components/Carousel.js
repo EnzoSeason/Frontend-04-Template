@@ -81,10 +81,7 @@ class Carousel extends Component {
             for (let offset of [-1, 0, 1]) { 
                 let nextIdx = currentIdx + offset;
                 nextIdx = (nextIdx % children.length + children.length) % children.length;
-                
-                // children[nextIdx].style.transition = 'none';
-                // children[nextIdx].style.transform = `translateX(${ - (nextIdx - offset) * vw + x % vw}px)`;
-
+                // animation for moving to the next image
                 let animation = new Animation(
                     children[nextIdx].style, 'transform',
                     - (nextIdx - offset) * vw + x % vw,  
@@ -94,7 +91,7 @@ class Carousel extends Component {
                 this.timeline.add(animation);
             }
 
-            this.currentIdx = this.currentIdx - (x - (x % vw) )/ vw - direction;
+            this.currentIdx = this.currentIdx - (x - (x % vw))/ vw - direction;
             this.currentIdx = (this.currentIdx % children.length + children.length) % children.length;
         });
     }
@@ -107,12 +104,13 @@ class Carousel extends Component {
             let nextIdx = (this.currentIdx + 1) % children.length;
             let current = children[this.currentIdx];
             let next = children[nextIdx];
-    
+            // animation for current image
             let currentAnimation = new Animation(
                 current.style, 'transform',
                 - this.currentIdx * vw, - vw - this.currentIdx * vw,
                 this.animationDuration, 0, ease, v => `translateX(${v}px)`
             );
+            // animation for next image
             let nextAnimation = new Animation(
                 next.style, 'transform',
                 vw - nextIdx * vw, - nextIdx * vw,
