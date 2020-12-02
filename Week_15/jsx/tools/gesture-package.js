@@ -119,7 +119,10 @@ export class Recognizer {
             }
         ];
         // console.log('tap start', point);
-        this.dispatcher.dispatch('tapstart', {}); 
+        this.dispatcher.dispatch('tapstart', {
+            clientX: point.clientX,
+            clientY: point.clientY
+        }); 
         
         context.pressHandler = setTimeout(() => {
             // press start
