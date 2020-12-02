@@ -56,7 +56,7 @@ function LinearEasing (x) {
   return x;
 }
 
-function bezier (mX1, mY1, mX2, mY2) {
+export function bezier (mX1, mY1, mX2, mY2) {
   if (!(0 <= mX1 && mX1 <= 1 && 0 <= mX2 && mX2 <= 1)) {
     throw new Error('bezier x values must be in [0, 1] range');
   }
@@ -104,4 +104,4 @@ function bezier (mX1, mY1, mX2, mY2) {
   };
 };
 
-export default bezier;
+export const ease = bezier(0.25, 0.1, 0.25, 1);

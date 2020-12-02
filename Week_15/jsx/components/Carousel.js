@@ -1,5 +1,7 @@
 import { Component } from '../tools/framework';
-
+import { enableGesture } from '../tools/gesture-package';
+import { Timeline, Animation } from '../tools/animation';
+import { ease } from '../tools/cubic-bezier';
 class Carousel extends Component {
     constructor() {
         super();
@@ -22,8 +24,10 @@ class Carousel extends Component {
             child.style.backgroundImage = `url('${imgUrl}')`;
             this.root.appendChild(child);
         }
+        enableGesture(this.root);
+        this.root.addEventListener('panmove', () => {console.log('pan move')});
         // this.autoPlay();
-        this.mouseControl();
+        // this.mouseControl();
     }
 
     mouseControl() {
