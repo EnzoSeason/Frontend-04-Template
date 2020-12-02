@@ -7,6 +7,7 @@ class Carousel extends Component {
         super();
         this.attributes = {};
         this.currentIdx = 0;
+        this.timeline = new Timeline();
     }
     setAttribute(name, value) {
         this.attributes[name] = value;
@@ -24,11 +25,14 @@ class Carousel extends Component {
             child.style.backgroundImage = `url('${imgUrl}')`;
             this.root.appendChild(child);
         }
-        enableGesture(this.root);
-
         // enable gestures
+        enableGesture(this.root);
         this.enablePanMove();
         this.enablePanEnd();
+
+        // enable autoplay
+        this.timeline.start();
+        this.autoPlay();
     }
 
     enablePanMove() {
@@ -73,24 +77,24 @@ class Carousel extends Component {
     }
 
     autoPlay() {
-        let currentIdx = 0;
         setInterval(() => {
             let children = this.root.children;
+            let vw = this.root.getBoundingClientRect()['width'];
             // get current img and next img
-            let nextIdx = (currentIdx + 1) % children.length;
-            let current = children[currentIdx];
+            let nextIdx = (this.currentIdx + 1) % children.length;
+            let current = children[this.currentIdx];
             let next = children[nextIdx];
             // prepare for the position of next img
             next.style.transition = 'none';
-            next.style.transform = `translateX(${100 - nextIdx * 100}%)`; // move to the right of current img
+            next.style.transform = `translateX(${vw - nextIdx * vw}px)`; // move to the right of current img
             // move to next img
             setTimeout(()=>{
                 next.style.transition = '';
-                current.style.transform = `translateX(${- 100 - currentIdx * 100}%)`;
-                next.style.transform = `translateX(${- nextIdx * 100}%)`;
-                currentIdx = nextIdx;
+                current.style.transform = `translateX(${- vw - this.currentIdx * vw}px)`;
+                next.style.transform = `translateX(${- nextIdx * vw}px)`;
+                this.currentIdx = nextIdx;
             }, 16); // 16ms is the time for a frame in browser
-        }, 3000);
+        }, 1000);
     }
 
 }
