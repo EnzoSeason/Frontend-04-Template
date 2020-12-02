@@ -22,6 +22,7 @@ export function createElement(type, attributes, ...children) {
 
 export const STATE = Symbol('state');
 export const ATTRIBUTES = Symbol('attributes');
+export const ROOT = Symbol('root');
 
 export class Component {
     constructor() {
@@ -33,14 +34,14 @@ export class Component {
     }
     mountTo(parent) {
         // proxy of DOM API: appendChild
-        if (!this.root) {
+        if (!this[ROOT]) {
             this.render();
         }
-        parent.appendChild(this.root);
+        parent.appendChild(this[ROOT]);
     }
     appendChild(child) {
         // use proxy: mountTo
-        child.mountTo(this.root);
+        child.mountTo(this[ROOT]);
     }
     triggerEvent(type, arg) {
         const key = 'on' + type.replace(/^[\s\S]/, s => s.toUpperCase());
@@ -50,13 +51,13 @@ export class Component {
 class TextNodeWrapper extends Component{
     constructor(content) {
         super();
-        this.root = document.createTextNode(content);
+        this[ROOT] = document.createTextNode(content);
     }
 }
 
 class ElementWrapper extends Component{
     constructor(type){
         super();
-        this.root = document.createElement(type);
+        this[ROOT] = document.createElement(type);
     }
 }

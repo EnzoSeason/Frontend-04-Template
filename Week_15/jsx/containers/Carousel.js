@@ -1,4 +1,4 @@
-import { Component, STATE, ATTRIBUTES } from '../tools/framework';
+import { Component, STATE, ATTRIBUTES, ROOT } from '../tools/framework';
 import { enableGesture } from '../tools/gesture-package';
 import { Timeline, Animation } from '../tools/animation';
 import { ease } from '../tools/cubic-bezier';
@@ -23,16 +23,16 @@ class Carousel extends Component {
     }
     
     render() {
-        this.root = document.createElement('div');
-        this.root.classList.add('carousel'); 
+        this[ROOT] = document.createElement('div');
+        this[ROOT].classList.add('carousel'); 
         // add images
         for(let imgUrl of this[ATTRIBUTES]['src']) {
             let child = document.createElement('div');
             child.style.backgroundImage = `url('${imgUrl}')`;
-            this.root.appendChild(child);
+            this[ROOT].appendChild(child);
         }
         // enable gestures
-        enableGesture(this.root);
+        enableGesture(this[ROOT]);
         this.enableTapStart();
         this.enablePanMove();
         this.enableAllEnd();
@@ -43,11 +43,11 @@ class Carousel extends Component {
     }
 
     enableTapStart() {
-        this.root.addEventListener('tapstart', event => {
+        this[ROOT].addEventListener('tapstart', event => {
             this[TIMELINE].pause();
             clearInterval(this[AUTOPLAY_HANDLER]);
 
-            let vw = this.root.getBoundingClientRect()['width'];
+            let vw = this[ROOT].getBoundingClientRect()['width'];
             let progress = (Date.now() - this[ANIMATION_T]) / this[STATE].animationDuration;
             if (Date.now() - this[ANIMATION_T] < this[STATE].animationDuration) { 
                 // while the image is moving, animation causes dx.
@@ -56,13 +56,18 @@ class Carousel extends Component {
                 // while the image is still, no dx.
                 this[ANIMATION_DX] = 0;
             }
+
+            this.triggerEvent('click', {
+                currentIdx: this[STATE].currentIdx,
+                data: this[ATTRIBUTES].src[this[STATE].currentIdx]
+            });
         });
     }
 
     enablePanMove() {
-        this.root.addEventListener('panmove', event => {
-            let children = this.root.children;
-            let vw = this.root.getBoundingClientRect()['width'];
+        this[ROOT].addEventListener('panmove', event => {
+            let children = this[ROOT].children;
+            let vw = this[ROOT].getBoundingClientRect()['width'];
 
             let x = event.clientX - event.startX - this[ANIMATION_DX];
             let currentIdx = this[STATE].currentIdx - (x - (x % vw) )/ vw; // round down
@@ -80,9 +85,9 @@ class Carousel extends Component {
     }
 
     enableAllEnd() {
-        this.root.addEventListener('allend', event => {
-            let children = this.root.children;
-            let vw = this.root.getBoundingClientRect()['width'];
+        this[ROOT].addEventListener('allend', event => {
+            let children = this[ROOT].children;
+            let vw = this[ROOT].getBoundingClientRect()['width'];
             // restart timeline
             this[TIMELINE].reset();
             this[TIMELINE].start();
@@ -113,8 +118,8 @@ class Carousel extends Component {
 
     autoPlay() {
         this[AUTOPLAY_HANDLER] = setInterval(() => {
-            let children = this.root.children;
-            let vw = this.root.getBoundingClientRect()['width'];
+            let children = this[ROOT].children;
+            let vw = this[ROOT].getBoundingClientRect()['width'];
             // get current img and next img
             let nextIdx = (this[STATE].currentIdx + 1) % children.length;
             let current = children[this[STATE].currentIdx];
@@ -140,7 +145,6 @@ class Carousel extends Component {
             this.triggerEvent('change', {currentIdx: this[STATE].currentIdx});
         }, this[STATE].intervalDuration);
     }
-
 }
 
 export default Carousel;
