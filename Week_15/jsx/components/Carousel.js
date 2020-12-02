@@ -13,6 +13,7 @@ class Carousel extends Component {
         this.animationDX = 0;
         this.animationHandler = null;
     }
+    
     render() {
         this.root = document.createElement('div');
         this.root.classList.add('carousel'); 
