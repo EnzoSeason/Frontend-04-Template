@@ -68,3 +68,13 @@
     1. 设置： 循环播放（setInterval 或 嵌套的 setTimeout）
     2. 设置： 给**当前（currentIdx）** 图片及其**右侧相邻（nextIdx）** 设置移动的动画，并添加到时间线
     3. 更新：当前显示的图片索引（currentIdx）
+
+## state, props (attributes) 设置
+
+* state， props
+
+    在 Component 中设置
+
+* private 设置
+
+    利用 Symbol， 设置 private 的类属性
