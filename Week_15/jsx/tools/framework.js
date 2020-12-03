@@ -1,4 +1,5 @@
 export function createElement(type, attributes, ...children) {
+    console.log('type', type);
     let element;
     if (typeof type === "string") {
         // wrap the native HTML element
@@ -9,14 +10,22 @@ export function createElement(type, attributes, ...children) {
     for (const name in attributes) {
         element.setAttribute(name, attributes[name]);
     }
-    for (const child of children) {
-        if (typeof child === 'string') {
-            const textNode = new TextNodeWrapper(child);
-            element.appendChild(textNode); // appendChild must have used mountTo
-        } else {
-            element.appendChild(child); // appendChild must have used mountTo
+    let processChildren = children => {
+        for (const child of children) {
+            console.log(child);
+            if (typeof child === 'object' && child instanceof Array) {
+                processChildren(child);
+                continue;
+            }
+            if (typeof child === 'string') {
+                const textNode = new TextNodeWrapper(child);
+                element.appendChild(textNode); // appendChild must have used mountTo
+            } else {
+                element.appendChild(child); // appendChild must have used mountTo
+            }
         }
     }
+    processChildren(children);
     return element;
 }
 
@@ -42,6 +51,9 @@ export class Component {
     appendChild(child) {
         // use proxy: mountTo
         child.mountTo(this[ROOT]);
+    }
+    render() { 
+        return this[ROOT];
     }
     triggerEvent(type, arg) {
         const key = 'on' + type.replace(/^[\s\S]/, s => s.toUpperCase());
