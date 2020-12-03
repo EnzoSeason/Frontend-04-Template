@@ -1,5 +1,4 @@
 export function createElement(type, attributes, ...children) {
-    console.log('type', type);
     let element;
     if (typeof type === "string") {
         // wrap the native HTML element
@@ -12,7 +11,6 @@ export function createElement(type, attributes, ...children) {
     }
     let processChildren = children => {
         for (const child of children) {
-            console.log(child);
             if (typeof child === 'object' && child instanceof Array) {
                 processChildren(child);
                 continue;
