@@ -8,11 +8,25 @@ module.exports = class extends Generator {
     super(args, opts);
   }
 
-  method1() {
-    this.log('method 1 just ran');
-  }
+  async prompting() {
+    const answers = await this.prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Your project name",
+        default: this.appname // Default to current folder name
+      },
+      {
+        type: "confirm",
+        name: "cool",
+        message: "Would you like to enable the Cool feature?"
+      }
+    ]);
 
-  method2() {
-    this.log('method 2 just ran');
+    this.fs.copyTpl(
+      this.templatePath('index.html'),
+      this.destinationPath('public/index.html'),
+      { title: answers.name + 'is cool ? ' + answers.cool }
+    );
   }
 };
