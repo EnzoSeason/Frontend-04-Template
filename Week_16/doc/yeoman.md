@@ -1,7 +1,7 @@
 # Yeoman
 
 ```command
-npm install -g yo
+sudo npm install -g yo
 ```
 
 ## YEOMAN GENERATOR
@@ -17,7 +17,7 @@ npm install -g yo
     // create a symlink in the global folder
     // in folder: generator-demo
     
-    npm link
+    sudo npm link
     ```
 
 * run: `yo demo`
