@@ -10,6 +10,8 @@ sudo npm install -g yo
 
 [link](https://yeoman.io/authoring/)
 
+* `npm install yeoman-generator`
+
 * `package.json` 中的 `name` 必须以 `generator-` 开头，比如 `generator-demo`
 
 * Yeoman 顺次执行 class 的 `methods`
