@@ -37,4 +37,11 @@ module.exports = class extends Generator {
     this.npmInstall(["vue"], { 'save-dev': false });
     this.npmInstall(["webpack", "vue-loader"], { 'save-dev': true });
   }
+
+  copyFiles() {
+    this.fs.copyTpl(
+        this.templatePath('hello.vue'),
+        this.destinationPath('src/hello.vue'),
+    );
+  } 
 };
