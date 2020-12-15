@@ -35,10 +35,26 @@ module.exports = class extends Generator {
     this.fs.extendJSON(this.destinationPath('package.json'), pkgJson);
     
     this.npmInstall(["vue"], { 'save-dev': false });
-    this.npmInstall(["webpack", "vue-loader"], { 'save-dev': true });
+    this.npmInstall(["webpack", "vue-loader", 
+        "vue-template-compiler", 'vue-style-loader', 'css-loader', 'copy-webpack-plugin'], { 'save-dev': true });
   }
 
   copyFiles() {
+    this.fs.copyTpl(
+        this.templatePath('webpack.config.js'),
+        this.destinationPath('webpack.config.js'),
+    );
+
+    this.fs.copyTpl(
+        this.templatePath('index.html'),
+        this.destinationPath('src/index.html'),
+    );
+
+    this.fs.copyTpl(
+        this.templatePath('main.js'),
+        this.destinationPath('src/main.js'),
+    );
+
     this.fs.copyTpl(
         this.templatePath('hello.vue'),
         this.destinationPath('src/hello.vue'),
