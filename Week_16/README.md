@@ -4,4 +4,4 @@
 
 * [webpack](doc/webpack.md)
 
-* [babel](odc/babel.md)
+* [babel](doc/babel.md)

@@ -1,6 +1,6 @@
 # webpack
 
-## Set up
+## Set up
 
 1. 全局安装
 
