@@ -1,11 +1,11 @@
 const EOF = Symbol("EOF");
 const css = require('css');
 
-let currentToken = null;
-let currentAttribute = null;
-let currentTextNode = null;
-let stack = [{ type: 'document', children: [] }];
-let rules = [];
+let currentToken;
+let currentAttribute;
+let currentTextNode;
+let stack;
+let rules;
 
 function addCSSRules(text) {
 	let ast = css.parse(text);
@@ -380,6 +380,13 @@ function selfClosingStartTag(c) {
 }
 
 export default function parseHTML(html) {
+
+	currentToken = null;
+	currentAttribute = null;
+	currentTextNode = null;
+	stack = [{ type: 'document', children: [] }];
+	rules = [];
+
     let state = data;
     for (let c of html) {
         state = state(c);
