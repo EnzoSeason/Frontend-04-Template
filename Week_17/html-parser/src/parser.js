@@ -263,7 +263,7 @@ function beforeAttributeName(c) {
 
 function afterAttributeName(c) {
 	if (c.match(/^[\t\n\f ]$/)) {
-		return afterAttributeName(c)
+		return afterAttributeName;
 	} else if (c === '/' || c === '>') {
 		return selfClosingStartTag
 	} else if (c === EOF) {
